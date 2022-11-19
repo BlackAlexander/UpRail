@@ -1,0 +1,7 @@
+UltraWide small object, horizontally centered, top part of the screen, under title
+Minimalistic art, centered train, sliding map (Mario style)
+Map generated procedurally
+One engine, two to four wagons
+All coded in AS3
+
+would work good as an app prototype

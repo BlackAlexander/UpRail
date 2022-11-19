@@ -1,0 +1,2 @@
+Information slides, like for sphaera in motus.
+One slide for each menu, eventually with a "more" button that takes you to another collection of slides, explaining each button and detail.

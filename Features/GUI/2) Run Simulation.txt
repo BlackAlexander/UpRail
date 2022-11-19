@@ -1,0 +1,114 @@
+This is where the action happens.
+
+Big screen (called simscreen), centered horizontally, 90% of the screen. Won't be covered/hidden by anything else.
+
+Before anything is selected, simscreen is empty, eventually a text with text which asks for selecting a map and a train before runinng a sim.
+
+On the simscreen, the hills and the train will be animated. Hills would be nice if they could have a hatch pattern, to give the idea of a crayon-drawn vibe. (Or solid color, gradients, see which works better). Map is fixed, doesn't move. Train is placed at the left-most part of the map.
+
+After a button is pressed, if core-connection is required, the simscreen is covered by a gray fade until data from cone-connection is retrieved.
+
+|----------------------------------------------------------------------|
+
+Buttons:
+-Top part of the screen (or bottom, see which looks better)
+-> Select Map
+    -> Message if no maps are loaded in the app
+-> Select Train
+    -> Message if no trains are loaded in the app
+    
+    -> * A baisc hardcoded flat map and train with single wagon that can't be deleted so there is always something to run?
+
+-> Select type of symulation
+    -> Math generated
+    -> Genetic Algorythm
+    -> Manual (user input for engine power)
+
+-> Play
+-> Pause
+    -> Faded before play is pressed
+    -> Faded before play is pressed
+-> Stop
+    -> Faded before play is pressed
+-> Restart
+
+-> Switch for speed (simspeed)
+    -> 0.25x, 0.5x, 1x, 1.5x, 2x, 10x
+    -> For the moment, speed switch should only change framerate but keep number of generated frames (for example, 0.5x won't double the accuracy, but display every frame slower)
+
+-> Buttons for simscreen adjustment
+    -> Zoom in, zoom out, pan up/down/left/right, reset
+
+-> Back to menu (top left)
+
+UNTIL STOP IS PRESSED, NO BUTTONS FOR CHANGING TRAIN/MAP/ETC SHOULD BE PUSHABLE
+
+|----------------------------------------------------------------------|
+
+Displays:
+-> Display of selected train and map under button for selection
+-> Rulers at simscreen edges
+    -> Should scale with zoom
+-> Traveled distance percentage (with bar) (top/bottom)
+-> Train speed (top/bottom)
+-> Train acceleration (top/bottom)
+-> Distance traveled so far (top/bottom)
+-> Time passed (top/bottom)
+    -> Should scale with simspeed, is equal to currentmove/24
+-> Two vertical "progress bars", 0-green, 100-red (right/left)
+    -> Engine stress / Brake stress
+        -> starts to fill when engine/brake reaches maximum power
+    -> Closeness to failure
+        -> min value of how close to any type of failure we are
+-> Two horizontal/vertical "progress bars" neutral colors (right/left)
+    -> Engine acceleration (how much of engine force is used)
+        -> Has a gray area for target power (when you press the gas, the engine doesn't instantly reach target power)
+    -> Brake power
+-> Front car direction angle (back car angle if train going backwards) (right/left)
+    -> For example, if train is climbing a 45degree hill, it should say 45, if it's going on a flat map it says 0
+-> Train mass (top/bottom)
+-> First car altitude (top/bottom)
+-> Traction (top/bottom)
+-> Framerate (max:24) (top/bottom)
+-> current horsepower? (top/bottom)
+-> used energy (joules? idk?) (top/bottom)
+-> tiny arrow showind direction (right, as it should be, staying (0 speed), or reverse) (top/bottom)
+
+|----------------------------------------------------------------------|
+
+When pressing play, sim sends to core the required data. Sim displays loading screen (spinning bar or something). Core runs the simulation, generates all the moves, puts them in file. Then, fetches next 2400 moves and sends them to sim. When sim displayed 2300 moves, reads next 2400, so on.
+
+|----------------------------------------------------------------------|
+
+Simulation stops when:
+-> Train reached destination
+-> Failure happened
+-> 24h have passed (autofailure)
+
+After simulation stop, simscreen is covered with data:
+-> Message (succes simulation / failure)
+-> for failure, display type of failure
+-> time passed, used energy, max stress reached, max closeness to failure
+-> top speed, highest angle climbed, lowest angle descended
+-> * graphs for speed, altitude, stress, acceleration
+-> * export statistics as jpg (would be nice with flash, like you did in "pizza junction")
+-> big clean button. After clean, simscreen is reset to the state before the run, with the same train and map
+
+|----------------------------------------------------------------------|
+
+For manual input, there would be three types of input.
+Two buttons, left and right arrows.
+1) Pressing a button sets target acceleration to 100, lifting button sets target acceleration to 0.
+2) Pressing a button slowly increases target acceleration, lifting the button slowly decreases acceleration.
+3) Pressing a button increases/decreases target acceleartion, lifting the button does nothing.
+
+|----------------------------------------------------------------------|
+
+Sound effects for engine, based on current engine power
+Sound effect for failure or succes
+Danger sound effect for failure when it is over 95%
+Also red screen when failure rate is over 95?
+
+|----------------------------------------------------------------------|
+
+Hovering over a dislpayed piece of information (such as "traction") should display a short explanation for that certain data.

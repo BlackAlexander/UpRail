@@ -1,0 +1,2 @@
+Single page with text/pictures.
+Data/Credits about developer, degree, teacher, university, whatever is needed.

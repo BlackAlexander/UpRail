@@ -1,0 +1,43 @@
+- Title (UpRail)
+-> * Traditional music from Maramureș
+- Cute dynamic train animation
+    -> * Procedurally generated animation
+- Run Simulation
+- Maps
+- Vehicles/Trains/Cars/Units
+- Big/Heavy/Large Data/Duty processing
+- Settings
+    -> Big graphical button, off square grid (same for help)
+    -> Drawing of a moving cog
+- Tutorial/Help
+    -> Drawing of a question mark
+- Exit button
+- About
+
+
+
+*------------------------------------------------------+
+|                                                 [X]  |
+|                        UPRAIL                        |
+|           +------------------------------+           |
+|                                                      |
+|                   [train animation]                  |
+|                                                      |
+|           +------------------------------+           |
+|           | R U N    S I M U L A T I O N |           |
+|           +--------------+---------------+           |
+|           |   M A P S    |   U N I T S   |           |
+|           +--------------+---------------+           |
+|           |     HEAVY DATA PROCESSING    |           |
+|           +------------------------------+           |
+|                                                      |
+|            +--------+          +--------+            |
+|            |        |          |        |            |
+|            |  COG   |          |    ?   |            |
+|            |        |          |        |            |
+|            +--------+          +--------+            |
+|                                                      |
+|                                             about    |
++------------------------------------------------------+
+
+-> Non-resizable window, fullscreen
