@@ -1,0 +1,84 @@
+Screen with operations for maps.
+
+|----------------------------------------------------------------------|
+
+Max map length: 10km
+Minimum map length: 1km (if you want a shorter map, for example 300m, just put 350m flat ground before and after it)
+
+Map height: between 40% and 60% of length
+
+|----------------------------------------------------------------------|
+
+-> Display the current list of maps (elements in the list are actually individual files handled by the core), with operations for each one:
+duplicate, edit, delete, export to file. Maybe list is paginated. Maximum number of maps that can be stored in the app around 24, or maybe 10 or 12. A default flat map is always there, undeletable.
+
+-> Button to create map:
+    -> With Map Designer (app's own map designer)
+    -> Import from File
+    -> From picture (give the path to a picture, processed by the core with various algorithms, see if a map can be generated out of it)
+    (eventually, more possible maps are shown and the user can choose one of them)
+    -> From mathematical formula, give a string (such as 3+sin(2x)) and it will be processed by the core. If it's a valid formula, a map will be generated out of the graph of the function.
+    -> Randomly generated map (maybe a few parameters, such as slope craziness, number of keys, etc)
+
+
+|----------------------------------------------------------------------|
+
+Map designer
+
+A separate screen.
+Has a big portion of the screen dedicated to previewing the map. In the upper part, a section for the map title, which can be modified.
+
+-> Button for mirroring the map! (very important, because this way, the user can check the "way back" for the train)
+
+Map review has grid/ruler.
+Coordinates are given in integer numbers, representing meters.
+
+Modifiers for length/width of the map.
+
+"+" Button for adding keys:
+With each click on the preview part, a new key is added on that point. Somewhere the exact position of the mouse coursor in the map should be displayed, so the user knows where he puts the new key. If you click four times, four keys are added. If you click the plus button back again, the adding feature is disabled. If adding a key between two other previous key, it disconnects the two previous ones and connects them again through the new key.
+
+"-" Button for removing keys:
+Clicking a key will cause that key to be deleted. In other aspects, works like "+".
+
+When +/ is pressed, keys are represented with small blue circles with white filling. In other cases, keys are simply not represented in any special way. Also maybe lines perpendicular to preview edge (like a crosshair with infinite length arms, but arms should be very thin/transparent).
+
+"circled +" button
+Adds a key at given numerical coordinaates. (check for coordinates valid - between 0 and maxwidth)
+
+"circled -" button
+Removes all keys between two give numerical coordinates
+
+"Round up/down" buttons
+Generates a whole bunch of new keys between two consecutive keys, with the intention of resembling a curved trajectory.
+Keys are added each time the curve difference is bigger than a delta Y threshold.
+
+-> * Undo button
+-> * Button to add random key (useless?)
+-> * Button to optimize map (delete all colliniar redundant keys)
+
+A button for saving.
+The map can't be saved if there isn't a key at X=0 and a key at X=maxWidth
+The map can't be saved if it has no name
+
+-> Display total current road length (use Pythagora)
+
+Restrictions:
+The user should be able to add restrictions to a map. Maybe about 10-12 or 24 restrictions for each map, or maybe more.
+A restriction can be applied to a certain portion of the map, between two given X values. Also, for each restriction, the user should provide a name (such as "bad road conditions", "high friction", "wet rail", etc)
+Possible restrictions:
+- Multiplier/Divider (Such as friction, multiplies speed with 0.99x, or high quality rail, multiplies speed with 1.11x)
+- Speed restriction (Speed can't be higher/lower than value)
+- Traction (by default, all map has 100% traction, and traction is reduced at wagon-level. But it can be also added here for a certain part of the map)
+- Weight limit for a certain part
+- * Engine power max/min level (use case example: noise restrictions)
+
+-> * Being able to see restrictions visually on the map (For example, friction from 5-10 would draw a red rectangle on all area from 5 to 10)
+
+-> * Zoom/pan for map preview
+
+If any car fails to pass a restriction, failure is caused in the SIM.
+
+Due to the way keys should be implemented, you shouldn't be able to have a slope bigger or equal to 90 degrees, and continuity is guaranteed.
+
+! Think about how to fill the part under the slope, to make it look realistic. -> Mask?? Don't know if it would work with AS3 generated pictures

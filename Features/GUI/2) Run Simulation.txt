@@ -17,7 +17,7 @@ Buttons:
 -> Select Train
     -> Message if no trains are loaded in the app
     
-    -> * A baisc hardcoded flat map and train with single wagon that can't be deleted so there is always something to run?
+    -> * A basic hardcoded flat map and train with single wagon that can't be deleted so there is always something to run?
 
 -> Select type of symulation
     -> Math generated
@@ -27,10 +27,10 @@ Buttons:
 -> Play
 -> Pause
     -> Faded before play is pressed
-    -> Faded before play is pressed
 -> Stop
     -> Faded before play is pressed
 -> Restart
+    -> Faded before play is pressed
 
 -> Switch for speed (simspeed)
     -> 0.25x, 0.5x, 1x, 1.5x, 2x, 10x
@@ -69,6 +69,7 @@ Displays:
 -> Train mass (top/bottom)
 -> First car altitude (top/bottom)
 -> Traction (top/bottom)
+    -> Fraction of what speed could've been reached if traction was 100%
 -> Framerate (max:24) (top/bottom)
 -> current horsepower? (top/bottom)
 -> used energy (joules? idk?) (top/bottom)
