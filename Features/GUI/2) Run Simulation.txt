@@ -24,6 +24,8 @@ Buttons:
     -> Genetic Algorythm
     -> Manual (user input for engine power)
 
+-> Select resolution (delta T // it is the number of frames per second computed. App will work only with 24)
+
 -> Play
 -> Pause
     -> Faded before play is pressed
