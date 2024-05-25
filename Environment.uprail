@@ -1,0 +1,4 @@
+mock_sim_slope_diffusion: 0.3
+gravity_acceleration: 9.8
+low_efficiency_obstruction: 1
+low_efficiency_timer: 1000
