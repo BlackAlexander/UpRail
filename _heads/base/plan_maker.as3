@@ -1,0 +1,39 @@
+stop();
+
+var track: Array = new Array();
+
+track.push([0, 0]);
+track.push([1000, 0]);
+
+function add_node(nodeX: int, nodeY: int){
+	if (nodeX < 0 || nodeX > 1000){
+		return;
+	}
+	if (nodeY < 0 || nodeY > 500){
+		return;
+	}
+    var newNode: Array = [nodeX, nodeY];
+    var low: int = 0;
+    var high: int = track.length - 1;
+    var mid: int;
+
+    while (low <= high) {
+        mid = Math.floor((low + high) / 2);
+        
+        if (track[mid][0] == nodeX) {
+            track[mid][1] = nodeY;
+            return;
+        } else if (track[mid][0] < nodeX) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+	track.insertAt(low, newNode);
+}
+
+function trace_track_values(){
+	for (var i: int = 0; i < track.length; i++) {
+		trace(track[i][0] + ", " + track[i][1]);
+	}
+}
