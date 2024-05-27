@@ -1,4 +1,5 @@
 import flash.display.MovieClip;
+import flash.display.Shape;
 
 stop();
 
@@ -7,6 +8,7 @@ var segmentThickness: Number = 1;
 var track: Array = new Array();
 var paintedSegments: Array = new Array();
 var paintedNodes: Array = new Array();
+var paintedFill: Array = new Array();
 
 function add_node(nodeX: int, nodeY: int){
 	if (nodeX < 0 || nodeX > 1000){
@@ -71,7 +73,24 @@ function trace_track_values(){
 	}
 }
 
+function paint_fill(){
+	var filling: Shape = new Shape();
+	var matrix:Matrix = new Matrix();
+	matrix.scale(0.1, 0.1);
+	filling.graphics.beginBitmapFill(new TrackMap(), matrix, true, true);
+	filling.graphics.moveTo(0, 500);
+	for (var i: int = 0; i < track.length; i++){
+		filling.graphics.lineTo(track[i][0], 500 - track[i][1]);
+	}
+	filling.graphics.lineTo(1000, 500);
+	filling.graphics.endFill();
+	filling.alpha = 0.5;
+	addChild(filling);
+	paintedFill.push(filling);
+}
+
 function paint_segments(){
+	paint_fill();
 	for (var i: int = 0; i < track.length - 1; i++){
 		var newSegment: MovieClip = new MovieClip();
 		newSegment.graphics.lineStyle(segmentThickness, 0x000000);
@@ -83,6 +102,10 @@ function paint_segments(){
 }
 
 function clear_paint(){
+	if (paintedFill.length > 0){
+		removeChild(paintedFill[0]);
+	}
+	paintedFill = [];
 	for (var i: int = 0; i < paintedSegments.length; i++){
 		removeChild(paintedSegments[i]);
 	}
@@ -112,3 +135,11 @@ function update_plan(){
 	clear_paint();
 	paint_segments();
 }
+
+add_node(500, 20);
+add_node(100, 200);
+add_node(400, 30);
+add_node(450, 80);
+add_node(800, 300);
+add_node(900, 300);
+update_plan();
