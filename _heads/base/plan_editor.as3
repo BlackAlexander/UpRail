@@ -242,15 +242,6 @@ function maker(){
 	plan_maker.add_node(0, 50);
 	plan_maker.add_node(1000, 50);
 	
-	
-	plan_maker.add_node(100, 200);
-	plan_maker.add_node(200, 210);
-	plan_maker.add_node(300, 220);
-	plan_maker.add_node(400, 230);
-	plan_maker.add_node(500, 270);
-	plan_maker.add_node(600, 290);
-//DELETE
-	
 	plan_maker.update_plan();
 	update_data();
 }
@@ -462,11 +453,57 @@ function planRemoveSquare(event: MouseEvent){
 	plan_maker.show_node_buttons();
 }
 
+
 plan_add_round.addEventListener(MouseEvent.CLICK, planAddRound);
 function planAddRound(event: MouseEvent){
 	data_panel.gotoAndStop(1);
 	input_panel.gotoAndStop(4);
 	plan_maker.show_node_buttons();
+	var newNode = new plan_node;
+	newNode.name = "guide-node";
+	this.addChild(newNode);
+	newNode.buttonMode = true;
+	newNode.useHandCursor = true;
+	var firstClick: Boolean = true;
+	stage.addEventListener(MouseEvent.MOUSE_MOVE, followCursor);
+	function followCursor(event:MouseEvent):void {
+		newNode.x = Math.min(Math.max(event.stageX, 100), 1350);
+		newNode.y = Math.min(Math.max(event.stageY, 200), 825);
+	}
+	stage.addEventListener(MouseEvent.CLICK, followClicked);
+	function followClicked(event:MouseEvent):void {
+		trace(mouseX);
+		trace(mouseY);
+		if (mouseX <= 100 || mouseX >= 1350 || mouseY <= 200 || mouseY >= 825){
+			if (firstClick){
+				firstClick = false;
+			} else {
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE, followCursor);
+				stage.removeEventListener(MouseEvent.CLICK, followClicked);
+				finish_circle_add();
+			}
+		} else {
+			var newNodeMouseX: int;
+			var newNodeMouseY: int;
+			newNodeMouseX = int((mouseX - 100)/1.25);
+			newNodeMouseY = 500 - int((mouseY - 200)/1.25);
+			plan_maker.add_node(newNodeMouseX, newNodeMouseY);
+			plan_maker.update_plan();
+			update_data();
+			plan_maker.show_node_buttons();
+		}
+	}
+	//on click, if mouse inside screen, add node, else finish circle add
+}
+
+function finish_circle_add(){
+	if (this.getChildByName("guide-node") != null){
+		this.removeChild(this.getChildByName("guide-node"));
+	}
+	plan_maker.update_plan();
+	update_data();
+	data_panel.gotoAndStop(1);
+	input_panel.gotoAndStop(1);
 }
 
 plan_remove_round.addEventListener(MouseEvent.CLICK, planRemoveRound);
