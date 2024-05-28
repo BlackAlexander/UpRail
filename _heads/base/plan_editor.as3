@@ -240,7 +240,7 @@ function interval_remove(leftIndex: int, rightIndex: int){
 
 function maker(){
 	plan_maker.add_node(0, 50);
-	plan_maker.add_node(1000, 90);
+	plan_maker.add_node(1000, 50);
 	plan_maker.update_plan();
 	update_data();
 }
@@ -287,24 +287,49 @@ function set_mass_limit(newMass: int){
 function add_speed_limit(value: int, left: int, right: int, limitType: String){
 	if (value <= 0 || value >= 1000){
 		showPlanInputError("Value out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	if (left < 0 || left > 1000){
 		showPlanInputError("Left limit out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	if (right < 0 || right > 1000){
 		showPlanInputError("Right limit out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	if (!((limitType == "min") || (limitType == "max"))){
 		showPlanInputError("Limit type not supported.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	if (speedRestrictions.length == 12){
 		showPlanInputError("Too many speed restrictions.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
+
+    for (var i: int = 0; i < speedRestrictions.length; i++) {
+        var existingValue: int = speedRestrictions[i][0];
+        var existingLeft: int = speedRestrictions[i][1];
+        var existingRight: int = speedRestrictions[i][2];
+        var existingLimitType: String = speedRestrictions[i][3];
+        if (!(right < existingLeft || left > existingRight)) {
+            if (limitType == "min" && existingLimitType == "max" && value > existingValue) {
+                showPlanInputError("Contradicting restrictions.");
+				data_panel.gotoAndStop(1);
+                return;
+            }
+            if (limitType == "max" && existingLimitType == "min" && value < existingValue) {
+                showPlanInputError("Contradicting restrictions.");
+				data_panel.gotoAndStop(1);
+                return;
+            }
+        }
+    }
+
 	var newSpeedLimit: Array = new Array();
 	newSpeedLimit = [value, left, right, limitType];
 	speedRestrictions.push(newSpeedLimit);
@@ -317,6 +342,7 @@ function add_speed_limit(value: int, left: int, right: int, limitType: String){
 function remove_speed_limit(indexToRemove: int){
 	if (indexToRemove <= 0 || indexToRemove > speedRestrictions.length){
 		showPlanInputError("Index out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	speedRestrictions.removeAt(indexToRemove - 1);
@@ -329,18 +355,22 @@ function remove_speed_limit(indexToRemove: int){
 function add_grip_limit(value: int, left: int, right: int){
 	if (value < 0 || value > 100){
 		showPlanInputError("Value out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	if (left < 0 || left > 1000){
 		showPlanInputError("Left limit out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	if (right < 0 || right > 1000){
 		showPlanInputError("Right limit out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	if (gripRestrictions.length == 12){
 		showPlanInputError("Too many grip restrictions.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	var newGripLimit: Array = new Array();
@@ -355,6 +385,7 @@ function add_grip_limit(value: int, left: int, right: int){
 function remove_grip_limit(indexToRemove: int){
 	if (indexToRemove <= 0 || indexToRemove > gripRestrictions.length){
 		showPlanInputError("Index out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	gripRestrictions.removeAt(indexToRemove - 1);
@@ -367,18 +398,22 @@ function remove_grip_limit(indexToRemove: int){
 function add_impediment_limit(value: int, left: int, right: int){
 	if (value < 0 || value > 100){
 		showPlanInputError("Value out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	if (left < 0 || left > 1000){
 		showPlanInputError("Left limit out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	if (right < 0 || right > 1000){
 		showPlanInputError("Right limit out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	if (impedimentRestrictions.length == 12){
 		showPlanInputError("Too many impediment restrictions.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	var newImpedimentLimit: Array = new Array();
@@ -393,6 +428,7 @@ function add_impediment_limit(value: int, left: int, right: int){
 function remove_impediment_limit(indexToRemove: int){
 	if (indexToRemove <= 0 || indexToRemove > impedimentRestrictions.length){
 		showPlanInputError("Index out of bounds.");
+		data_panel.gotoAndStop(1);
 		return;
 	}
 	impedimentRestrictions.removeAt(indexToRemove - 1);
