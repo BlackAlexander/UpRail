@@ -241,6 +241,16 @@ function interval_remove(leftIndex: int, rightIndex: int){
 function maker(){
 	plan_maker.add_node(0, 50);
 	plan_maker.add_node(1000, 50);
+	
+	
+	plan_maker.add_node(100, 200);
+	plan_maker.add_node(200, 210);
+	plan_maker.add_node(300, 220);
+	plan_maker.add_node(400, 230);
+	plan_maker.add_node(500, 270);
+	plan_maker.add_node(600, 290);
+//DELETE
+	
 	plan_maker.update_plan();
 	update_data();
 }
@@ -456,12 +466,41 @@ plan_add_round.addEventListener(MouseEvent.CLICK, planAddRound);
 function planAddRound(event: MouseEvent){
 	data_panel.gotoAndStop(1);
 	input_panel.gotoAndStop(4);
+	plan_maker.show_node_buttons();
 }
 
 plan_remove_round.addEventListener(MouseEvent.CLICK, planRemoveRound);
 function planRemoveRound(event: MouseEvent){
 	data_panel.gotoAndStop(1);
 	input_panel.gotoAndStop(5);
+	planRemoveRoundSingle();
+}
+
+function planRemoveRoundSingle(){
+	plan_maker.show_node_buttons();
+	for (var i: int = 0; i < plan_maker.paintedNodes.length; i++) {
+	(function(index: int): void {
+		plan_maker.paintedNodes[index].buttonMode = true;
+		plan_maker.paintedNodes[index].useHandCursor = true;
+		plan_maker.paintedNodes[index].addEventListener(MouseEvent.CLICK, function(event: MouseEvent): void {
+			if ((index == 0) || (index == plan_maker.track.length - 1)) {
+				return;
+			}
+			plan_maker.remove_node(plan_maker.track[index][0]);
+			plan_maker.update_plan();
+			update_data();
+			planRemoveRoundSingle();
+		});
+	})(i);
+	}
+}
+
+function finish_circle_remove(){
+	plan_maker.hide_node_buttons();
+	plan_maker.update_plan();
+	update_data();
+	data_panel.gotoAndStop(1);
+	input_panel.gotoAndStop(1);
 }
 
 plan_edit_start_elevation.addEventListener(MouseEvent.CLICK, planEditStartElevation);
