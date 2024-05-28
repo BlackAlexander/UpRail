@@ -3,7 +3,6 @@ Screen with operations for maps.
 |----------------------------------------------------------------------|
 
 Max map length: 1000m
-Minimum map length: 100m (if you want a shorter map, for example 300m, just put 350m flat ground before and after it)
 
 Map height: between 40% and 60% of length
 

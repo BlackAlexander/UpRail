@@ -4,7 +4,11 @@ stop();
 
 plans_create_back_btn.addEventListener(MouseEvent.CLICK, return_to_title);
 
-var plan_mass_limit: Number = 0;
+new_node_coordinates.visible = false;
+var plan_mass_limit: int = 0;
+var speedRestrictions: Array = new Array();
+var gripRestrictions: Array = new Array();
+var impedimentRestrictions: Array = new Array();
 
 function compute_track_length(){
 	if (plan_maker.track == null){
@@ -65,6 +69,12 @@ function compute_lowest_elevation(){
 function compute_elevation_change(){
 	return compute_highest_elevation() - compute_lowest_elevation();
 }
+function compute_nodes_count(){
+	if (plan_maker.track == null){
+		return 0;
+	}
+	return plan_maker.track.length;
+}
 function compute_steepest_climb(){
 	if (plan_maker.track == null){
 		return 0;
@@ -123,7 +133,6 @@ function compute_narrowest_angle_out(){
 			thetaDegrees = 360 - thetaDegrees;
 		}
 		currentAngle = (180 - thetaDegrees);
-		trace(currentAngle);
 		if (currentAngle < 0){
 			if (currentAngle > narrowest){
 				narrowest = currentAngle;
@@ -183,38 +192,248 @@ function update_data(){
 	data_panel.data_start_elevation.text = String(compute_track_start());
 	data_panel.data_finish_elevation.text = String(compute_track_finish());
 	data_panel.data_mass_limit.text = String(plan_mass_limit);
-	data_panel.data_speed_restrictions.text = String(0);
-	data_panel.data_grip_segments.text = String(0);
-	data_panel.data_impediment_segments.text = String(0);
+	data_panel.data_nodes_count.text = String(compute_nodes_count());
+	data_panel.data_speed_restrictions.text = String(speedRestrictions.length);
+	data_panel.data_grip_segments.text = String(gripRestrictions.length);
+	data_panel.data_impediment_segments.text = String(impedimentRestrictions.length);
 	data_panel.data_highest_elevation.text = String(compute_highest_elevation());
 	data_panel.data_lowest_elevation.text = String(compute_lowest_elevation());
-	data_panel.data_steepest_climb.text = String(compute_steepest_climb()) + "%";
+	data_panel.data_steepest_climb.text = String(int(compute_steepest_climb())) + "%";
 	data_panel.data_elevation_change.text = String(compute_elevation_change());
 	data_panel.data_narrowest_angle_in.text = String(compute_narrowest_angle_in()) + "°";
 	data_panel.data_narrowest_angle_out.text = String(compute_narrowest_angle_out()) + "°";
 }
 
-function maker(){
-	plan_maker.add_node(0, 0);
-	plan_maker.add_node(50, 50);
-	plan_maker.add_node(100, 100);
-	plan_maker.add_node(110, 100);
-	plan_maker.add_node(120, 100);
-	plan_maker.add_node(170, 50);
-	plan_maker.add_node(200, 50);
-	plan_maker.add_node(210, 0);
-	plan_maker.add_node(250, 0);
-	plan_maker.add_node(255, 100);
-	plan_maker.add_node(260, 0);
-	plan_maker.add_node(300, 0);
-	plan_maker.add_node(400, 100);
-	plan_maker.add_node(500, 100);
-	plan_maker.add_node(510, 0);
-	plan_maker.add_node(520, 100);
-	plan_maker.add_node(600, 100);
-	plan_maker.add_node(700, 0);
-	plan_maker.add_node(1000, 0);
+function quick_add(nodeX: int, nodeY: int){
+	plan_maker.add_node(nodeX, nodeY);
 	plan_maker.update_plan();
-	plan_maker.show_node_buttons();
 	update_data();
+	showPlanInputError("OK");
+}
+
+function quick_remove(nodeX: int){
+	plan_maker.remove_node(nodeX);
+	plan_maker.update_plan();
+	update_data();
+	showPlanInputError("OK");
+}
+
+function interval_remove(leftIndex: int, rightIndex: int){
+	for (var i: int = leftIndex; i <= rightIndex; i++){
+		plan_maker.remove_node(i);
+	}
+	plan_maker.update_plan();
+	update_data();
+}
+
+function maker(){
+	plan_maker.add_node(0, 50);
+	plan_maker.add_node(1000, 90);
+	plan_maker.update_plan();
+	update_data();
+}
+
+function showPlanInputError(theMessage: String){
+	input_panel.gotoAndStop(15);
+	input_panel.input_status_message.text = theMessage;
+	input_panel.play();
+}
+
+function quick_set_start_height(nodeY: int){
+	if (nodeY < 0 || nodeY >= 500) {
+		showPlanInputError("Height out of bounds.");
+		return;
+	}
+	plan_maker.set_start_height(nodeY);
+	plan_maker.update_plan();
+	update_data();
+	showPlanInputError("OK");
+}
+
+function quick_set_end_height(nodeY: int){
+	if (nodeY < 0 || nodeY >= 500) {
+		showPlanInputError("Height out of bounds.");
+		return;
+	}
+	plan_maker.set_end_height(nodeY);
+	plan_maker.update_plan();
+	update_data();
+	showPlanInputError("OK");
+}
+
+function set_mass_limit(newMass: int){
+	if (newMass < 0 || newMass > 99999999) {
+		showPlanInputError("Mass out of bounds.");
+		return;
+	}
+	plan_mass_limit = newMass;
+	plan_maker.update_plan();
+	update_data();
+	showPlanInputError("OK");
+}
+
+function add_speed_limit(value: int, left: int, right: int, limitType: String){
+	if (value <= 0 || value >= 1000){
+		showPlanInputError("Value out of bounds.");
+		return;
+	}
+	if (left < 0 || left > 1000){
+		showPlanInputError("Left limit out of bounds.");
+		return;
+	}
+	if (right < 0 || right > 1000){
+		showPlanInputError("Right limit out of bounds.");
+		return;
+	}
+	if (!((limitType == "min") || (limitType == "max"))){
+		showPlanInputError("Limit type not supported.");
+		return;
+	}
+	var newSpeedLimit: Array = new Array();
+	newSpeedLimit = [value, left, right, limitType];
+	speedRestrictions.push(newSpeedLimit);
+	data_panel.gotoAndStop(1);
+	plan_maker.update_plan();
+	update_data();
+	showPlanInputError("OK");
+}
+
+function remove_speed_limit(indexToRemove: int){
+	if (indexToRemove <= 0 || indexToRemove > speedRestrictions.length){
+		showPlanInputError("Index out of bounds.");
+		return;
+	}
+	speedRestrictions.removeAt(indexToRemove - 1);
+	data_panel.gotoAndStop(1);
+	plan_maker.update_plan();
+	update_data();
+	showPlanInputError("OK");
+}
+
+function add_grip_limit(value: int, left: int, right: int){
+	if (value < 0 || value > 100){
+		showPlanInputError("Value out of bounds.");
+		return;
+	}
+	if (left < 0 || left > 1000){
+		showPlanInputError("Left limit out of bounds.");
+		return;
+	}
+	if (right < 0 || right > 1000){
+		showPlanInputError("Right limit out of bounds.");
+		return;
+	}
+	var newGripLimit: Array = new Array();
+	newGripLimit = [value, left, right];
+	gripRestrictions.push(newGripLimit);
+	data_panel.gotoAndStop(1);
+	plan_maker.update_plan();
+	update_data();
+	showPlanInputError("OK");
+}
+
+function remove_grip_limit(indexToRemove: int){
+	if (indexToRemove <= 0 || indexToRemove > gripRestrictions.length){
+		showPlanInputError("Index out of bounds.");
+		return;
+	}
+	gripRestrictions.removeAt(indexToRemove - 1);
+	data_panel.gotoAndStop(1);
+	plan_maker.update_plan();
+	update_data();
+	showPlanInputError("OK");
+}
+
+function add_impediment_limit(value: int, left: int, right: int){
+	if (value < 0 || value > 100){
+		showPlanInputError("Value out of bounds.");
+		return;
+	}
+	if (left < 0 || left > 1000){
+		showPlanInputError("Left limit out of bounds.");
+		return;
+	}
+	if (right < 0 || right > 1000){
+		showPlanInputError("Right limit out of bounds.");
+		return;
+	}
+	var newImpedimentLimit: Array = new Array();
+	newImpedimentLimit = [value, left, right];
+	impedimentRestrictions.push(newImpedimentLimit);
+	data_panel.gotoAndStop(1);
+	plan_maker.update_plan();
+	update_data();
+	showPlanInputError("OK");
+}
+
+function remove_impediment_limit(indexToRemove: int){
+	if (indexToRemove <= 0 || indexToRemove > impedimentRestrictions.length){
+		showPlanInputError("Index out of bounds.");
+		return;
+	}
+	impedimentRestrictions.removeAt(indexToRemove - 1);
+	data_panel.gotoAndStop(1);
+	plan_maker.update_plan();
+	update_data();
+	showPlanInputError("OK");
+}
+
+plan_add_square.addEventListener(MouseEvent.CLICK, planAddSquare);
+function planAddSquare(event: MouseEvent){
+	data_panel.gotoAndStop(1);
+	input_panel.gotoAndStop(2);
+	plan_maker.show_node_buttons();
+}
+
+plan_remove_square.addEventListener(MouseEvent.CLICK, planRemoveSquare);
+function planRemoveSquare(event: MouseEvent){
+	data_panel.gotoAndStop(1);
+	input_panel.gotoAndStop(3);
+	plan_maker.show_node_buttons();
+}
+
+plan_add_round.addEventListener(MouseEvent.CLICK, planAddRound);
+function planAddRound(event: MouseEvent){
+	data_panel.gotoAndStop(1);
+}
+
+plan_remove_round.addEventListener(MouseEvent.CLICK, planRemoveRound);
+function planRemoveRound(event: MouseEvent){
+	data_panel.gotoAndStop(1);
+}
+
+plan_add_speed.addEventListener(MouseEvent.CLICK, planAddSpeed);
+function planAddSpeed(event: MouseEvent){
+	data_panel.gotoAndStop(9);
+	input_panel.gotoAndStop(2);
+}
+
+plan_add_grip.addEventListener(MouseEvent.CLICK, planAddGrip);
+function planAddGrip(event: MouseEvent){
+	data_panel.gotoAndStop(11);
+	input_panel.gotoAndStop(3);
+}
+
+plan_add_impediment.addEventListener(MouseEvent.CLICK, planAddImpediment);
+function planAddImpediment(event: MouseEvent){
+	data_panel.gotoAndStop(13);
+	input_panel.gotoAndStop(4);
+}
+
+plan_remove_speed.addEventListener(MouseEvent.CLICK, planRemoveSpeed);
+function planRemoveSpeed(event: MouseEvent){
+	data_panel.gotoAndStop(10);
+	input_panel.gotoAndStop(2);
+}
+
+plan_remove_grip.addEventListener(MouseEvent.CLICK, planRemoveGrip);
+function planRemoveGrip(event: MouseEvent){
+	data_panel.gotoAndStop(12);
+	input_panel.gotoAndStop(3);
+}
+
+plan_remove_impediment.addEventListener(MouseEvent.CLICK, planRemoveImpediment);
+function planRemoveImpediment(event: MouseEvent){
+	data_panel.gotoAndStop(14);
+	input_panel.gotoAndStop(4);
 }
