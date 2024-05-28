@@ -205,6 +205,14 @@ function update_data(){
 }
 
 function quick_add(nodeX: int, nodeY: int){
+	if (nodeX < 0 || nodeX > 1000) {
+		showPlanInputError("X out of bounds.");
+		return;
+	}
+	if (nodeY < 0 || nodeY >= 500) {
+		showPlanInputError("Y out of bounds.");
+		return;
+	}
 	plan_maker.add_node(nodeX, nodeY);
 	plan_maker.update_plan();
 	update_data();
@@ -212,6 +220,10 @@ function quick_add(nodeX: int, nodeY: int){
 }
 
 function quick_remove(nodeX: int){
+	if (nodeX < 0 || nodeX > 1000) {
+		showPlanInputError("X out of bounds.");
+		return;
+	}
 	plan_maker.remove_node(nodeX);
 	plan_maker.update_plan();
 	update_data();
@@ -289,6 +301,10 @@ function add_speed_limit(value: int, left: int, right: int, limitType: String){
 		showPlanInputError("Limit type not supported.");
 		return;
 	}
+	if (speedRestrictions.length == 12){
+		showPlanInputError("Too many speed restrictions.");
+		return;
+	}
 	var newSpeedLimit: Array = new Array();
 	newSpeedLimit = [value, left, right, limitType];
 	speedRestrictions.push(newSpeedLimit);
@@ -323,6 +339,10 @@ function add_grip_limit(value: int, left: int, right: int){
 		showPlanInputError("Right limit out of bounds.");
 		return;
 	}
+	if (gripRestrictions.length == 12){
+		showPlanInputError("Too many grip restrictions.");
+		return;
+	}
 	var newGripLimit: Array = new Array();
 	newGripLimit = [value, left, right];
 	gripRestrictions.push(newGripLimit);
@@ -355,6 +375,10 @@ function add_impediment_limit(value: int, left: int, right: int){
 	}
 	if (right < 0 || right > 1000){
 		showPlanInputError("Right limit out of bounds.");
+		return;
+	}
+	if (impedimentRestrictions.length == 12){
+		showPlanInputError("Too many impediment restrictions.");
 		return;
 	}
 	var newImpedimentLimit: Array = new Array();
@@ -395,45 +419,65 @@ function planRemoveSquare(event: MouseEvent){
 plan_add_round.addEventListener(MouseEvent.CLICK, planAddRound);
 function planAddRound(event: MouseEvent){
 	data_panel.gotoAndStop(1);
+	input_panel.gotoAndStop(4);
 }
 
 plan_remove_round.addEventListener(MouseEvent.CLICK, planRemoveRound);
 function planRemoveRound(event: MouseEvent){
 	data_panel.gotoAndStop(1);
+	input_panel.gotoAndStop(5);
+}
+
+plan_edit_start_elevation.addEventListener(MouseEvent.CLICK, planEditStartElevation);
+function planEditStartElevation(event: MouseEvent){
+	data_panel.gotoAndStop(1);
+	input_panel.gotoAndStop(6);
+}
+
+plan_edit_finish_elevation.addEventListener(MouseEvent.CLICK, planEditFinishElevation);
+function planEditFinishElevation(event: MouseEvent){
+	data_panel.gotoAndStop(1);
+	input_panel.gotoAndStop(7);
+}
+
+plan_edit_mass.addEventListener(MouseEvent.CLICK, planEditMass);
+function planEditMass(event: MouseEvent){
+	data_panel.gotoAndStop(1);
+	input_panel.gotoAndStop(8);
 }
 
 plan_add_speed.addEventListener(MouseEvent.CLICK, planAddSpeed);
 function planAddSpeed(event: MouseEvent){
-	data_panel.gotoAndStop(9);
-	input_panel.gotoAndStop(2);
+	data_panel.gotoAndStop(2);
+	input_panel.gotoAndStop(9);
 }
 
 plan_add_grip.addEventListener(MouseEvent.CLICK, planAddGrip);
 function planAddGrip(event: MouseEvent){
-	data_panel.gotoAndStop(11);
-	input_panel.gotoAndStop(3);
+	data_panel.gotoAndStop(3);
+	input_panel.gotoAndStop(11);
 }
 
 plan_add_impediment.addEventListener(MouseEvent.CLICK, planAddImpediment);
 function planAddImpediment(event: MouseEvent){
-	data_panel.gotoAndStop(13);
-	input_panel.gotoAndStop(4);
+	data_panel.gotoAndStop(4);
+	input_panel.gotoAndStop(13);
 }
 
 plan_remove_speed.addEventListener(MouseEvent.CLICK, planRemoveSpeed);
 function planRemoveSpeed(event: MouseEvent){
-	data_panel.gotoAndStop(10);
-	input_panel.gotoAndStop(2);
+	data_panel.gotoAndStop(2);
+	input_panel.gotoAndStop(10);
 }
 
 plan_remove_grip.addEventListener(MouseEvent.CLICK, planRemoveGrip);
 function planRemoveGrip(event: MouseEvent){
-	data_panel.gotoAndStop(12);
-	input_panel.gotoAndStop(3);
+	data_panel.gotoAndStop(3);
+	input_panel.gotoAndStop(12);
 }
 
 plan_remove_impediment.addEventListener(MouseEvent.CLICK, planRemoveImpediment);
 function planRemoveImpediment(event: MouseEvent){
-	data_panel.gotoAndStop(14);
-	input_panel.gotoAndStop(4);
+	data_panel.gotoAndStop(4);
+	input_panel.gotoAndStop(14);
 }
