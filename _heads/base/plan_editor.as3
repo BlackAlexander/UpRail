@@ -459,6 +459,8 @@ function planAddRound(event: MouseEvent){
 	data_panel.gotoAndStop(1);
 	input_panel.gotoAndStop(4);
 	plan_maker.show_node_buttons();
+	new_node_coordinates.visible = true;
+	new_node_coordinates.text = "0, 0";
 	var newNode = new plan_node;
 	newNode.name = "guide-node";
 	this.addChild(newNode);
@@ -469,11 +471,16 @@ function planAddRound(event: MouseEvent){
 	function followCursor(event:MouseEvent):void {
 		newNode.x = Math.min(Math.max(event.stageX, 100), 1350);
 		newNode.y = Math.min(Math.max(event.stageY, 200), 825);
+		if (!(mouseX <= 100 || mouseX >= 1350 || mouseY <= 200 || mouseY >= 825)){
+			var newNodeMouseXPos: int;
+			var newNodeMouseYPos: int;
+			newNodeMouseXPos = int((mouseX - 100)/1.25);
+			newNodeMouseYPos = 500 - int((mouseY - 200)/1.25);
+			new_node_coordinates.text = String(newNodeMouseXPos) + ", " + String(newNodeMouseYPos);
+		}
 	}
 	stage.addEventListener(MouseEvent.CLICK, followClicked);
 	function followClicked(event:MouseEvent):void {
-		trace(mouseX);
-		trace(mouseY);
 		if (mouseX <= 100 || mouseX >= 1350 || mouseY <= 200 || mouseY >= 825){
 			if (firstClick){
 				firstClick = false;
@@ -497,6 +504,7 @@ function planAddRound(event: MouseEvent){
 }
 
 function finish_circle_add(){
+	new_node_coordinates.visible = false;
 	if (this.getChildByName("guide-node") != null){
 		this.removeChild(this.getChildByName("guide-node"));
 	}
