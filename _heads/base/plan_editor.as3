@@ -1,0 +1,220 @@
+import flash.events.MouseEvent;
+
+stop();
+
+plans_create_back_btn.addEventListener(MouseEvent.CLICK, return_to_title);
+
+var plan_mass_limit: Number = 0;
+
+function compute_track_length(){
+	if (plan_maker.track == null){
+		return 0;
+	}
+	var fullTrack = plan_maker.track;
+	var finalSum: Number = 0;
+	for (var i: int = 0; i < fullTrack.length - 1; i++){
+		var segmentLength: Number;
+		var xa: Number = fullTrack[i][0];
+		var xb: Number = fullTrack[i + 1][0];
+		var ya: Number = fullTrack[i][1];
+		var yb: Number = fullTrack[i + 1][1];
+		segmentLength = Math.sqrt((xb-xa)*(xb-xa)+(yb-ya)*(yb-ya));
+		finalSum += segmentLength;
+	}
+	return finalSum;
+}
+
+function compute_track_start(){
+	if (plan_maker.track == null){
+		return 0;
+	}
+	return plan_maker.track[0][1];
+}
+function compute_track_finish(){
+	if (plan_maker.track == null){
+		return 0;
+	}
+	return plan_maker.track[plan_maker.track.length - 1][1];
+}
+function compute_highest_elevation(){
+	if (plan_maker.track == null){
+		return 0;
+	}
+	var fullTrack = plan_maker.track;
+	var highest: int = 0;
+	for (var i: int = 0; i < fullTrack.length; i++){
+		if (fullTrack[i][1] > highest){
+			highest = fullTrack[i][1];
+		}
+	}
+	return highest;
+}
+function compute_lowest_elevation(){
+	if (plan_maker.track == null){
+		return 0;
+	}
+	var fullTrack = plan_maker.track;
+	var lowest: int = 500;
+	for (var i: int = 0; i < fullTrack.length; i++){
+		if (fullTrack[i][1] < lowest){
+			lowest = fullTrack[i][1];
+		}
+	}
+	return lowest;
+}
+function compute_elevation_change(){
+	return compute_highest_elevation() - compute_lowest_elevation();
+}
+function compute_steepest_climb(){
+	if (plan_maker.track == null){
+		return 0;
+	}
+	var fullTrack = plan_maker.track;
+	var highest: Number = -50000; //lowest possible slope
+	for (var i: int = 0; i < fullTrack.length - 1; i++){
+		var segmentClimb: Number;
+		var xa: Number = fullTrack[i][0];
+		var xb: Number = fullTrack[i + 1][0];
+		var ya: Number = fullTrack[i][1];
+		var yb: Number = fullTrack[i + 1][1];
+		segmentClimb = (yb-ya)/(xb-xa)*100;
+		if (segmentClimb > highest){
+			highest = segmentClimb;
+		}
+	}
+	return highest;
+}
+
+function compute_narrowest_angle_out(){
+	if (plan_maker.track == null){
+		return 0;
+	}
+	if (plan_maker.track.length <= 2){
+		return 180;
+	}
+	var fullTrack = plan_maker.track;
+	var narrowest: Number = -180;
+	for (var i: int = 1; i < fullTrack.length - 1; i++){
+		var currentAngle: Number;
+		var xa: Number = fullTrack[i-1][0];
+		var xb: Number = fullTrack[i][0];
+		var xc: Number = fullTrack[i+1][0];
+		var ya: Number = fullTrack[i-1][1];
+		var yb: Number = fullTrack[i][1];
+		var yc: Number = fullTrack[i+1][1];
+		
+		var abx: Number = xb - xa;
+		var aby: Number = yb - ya;
+		var bcx: Number = xc - xb;
+		var bcy: Number = yc - yb;
+		var dotProduct: Number = abx * bcx + aby * bcy;
+		var magnitudeAB: Number = Math.sqrt(abx * abx + aby * aby);
+		var magnitudeBC: Number = Math.sqrt(bcx * bcx + bcy * bcy);
+		var cosTheta: Number = dotProduct / (magnitudeAB * magnitudeBC);
+		if (cosTheta < -1) {
+			cosTheta = -1;
+		} else if (cosTheta > 1) {
+			cosTheta = 1;
+		}
+		var theta: Number = Math.acos(cosTheta);
+		var thetaDegrees: Number = theta * (180 / Math.PI);
+		var crossProduct: Number = abx * bcy - aby * bcx;
+		if (crossProduct < 0) {
+			thetaDegrees = 360 - thetaDegrees;
+		}
+		currentAngle = (180 - thetaDegrees);
+		trace(currentAngle);
+		if (currentAngle < 0){
+			if (currentAngle > narrowest){
+				narrowest = currentAngle;
+			}
+		}
+	}
+	return int(Math.abs(narrowest));
+}
+
+function compute_narrowest_angle_in(){
+	if (plan_maker.track == null){
+		return 0;
+	}
+	if (plan_maker.track.length <= 2){
+		return 180;
+	}
+	var fullTrack = plan_maker.track;
+	var narrowest: Number = 180;
+	for (var i: int = 1; i < fullTrack.length - 1; i++){
+		var currentAngle: Number;
+		var xa: Number = fullTrack[i-1][0];
+		var xb: Number = fullTrack[i][0];
+		var xc: Number = fullTrack[i+1][0];
+		var ya: Number = fullTrack[i-1][1];
+		var yb: Number = fullTrack[i][1];
+		var yc: Number = fullTrack[i+1][1];
+		
+		var abx: Number = xb - xa;
+		var aby: Number = yb - ya;
+		var bcx: Number = xc - xb;
+		var bcy: Number = yc - yb;
+		var dotProduct: Number = abx * bcx + aby * bcy;
+		var magnitudeAB: Number = Math.sqrt(abx * abx + aby * aby);
+		var magnitudeBC: Number = Math.sqrt(bcx * bcx + bcy * bcy);
+		var cosTheta: Number = dotProduct / (magnitudeAB * magnitudeBC);
+		var theta: Number = Math.acos(cosTheta);
+		var thetaDegrees: Number = theta * (180 / Math.PI);
+		var crossProduct: Number = abx * bcy - aby * bcx;
+		if (crossProduct < 0) {
+			thetaDegrees = 360 - thetaDegrees;
+		}
+		currentAngle = (180 - thetaDegrees);
+		if (currentAngle > 0){
+			if (currentAngle < narrowest){
+				narrowest = currentAngle;
+			}
+		}
+	}
+	return int(narrowest);
+}
+
+function update_data(){
+	if(data_panel.currentFrame != 1){
+		return;
+	}
+	data_panel.data_track_length.text = String(compute_track_length());
+	data_panel.data_start_elevation.text = String(compute_track_start());
+	data_panel.data_finish_elevation.text = String(compute_track_finish());
+	data_panel.data_mass_limit.text = String(plan_mass_limit);
+	data_panel.data_speed_restrictions.text = String(0);
+	data_panel.data_grip_segments.text = String(0);
+	data_panel.data_impediment_segments.text = String(0);
+	data_panel.data_highest_elevation.text = String(compute_highest_elevation());
+	data_panel.data_lowest_elevation.text = String(compute_lowest_elevation());
+	data_panel.data_steepest_climb.text = String(compute_steepest_climb()) + "%";
+	data_panel.data_elevation_change.text = String(compute_elevation_change());
+	data_panel.data_narrowest_angle_in.text = String(compute_narrowest_angle_in()) + "°";
+	data_panel.data_narrowest_angle_out.text = String(compute_narrowest_angle_out()) + "°";
+}
+
+function maker(){
+	plan_maker.add_node(0, 0);
+	plan_maker.add_node(50, 50);
+	plan_maker.add_node(100, 100);
+	plan_maker.add_node(110, 100);
+	plan_maker.add_node(120, 100);
+	plan_maker.add_node(170, 50);
+	plan_maker.add_node(200, 50);
+	plan_maker.add_node(210, 0);
+	plan_maker.add_node(250, 0);
+	plan_maker.add_node(255, 100);
+	plan_maker.add_node(260, 0);
+	plan_maker.add_node(300, 0);
+	plan_maker.add_node(400, 100);
+	plan_maker.add_node(500, 100);
+	plan_maker.add_node(510, 0);
+	plan_maker.add_node(520, 100);
+	plan_maker.add_node(600, 100);
+	plan_maker.add_node(700, 0);
+	plan_maker.add_node(1000, 0);
+	plan_maker.update_plan();
+	plan_maker.show_node_buttons();
+	update_data();
+}
