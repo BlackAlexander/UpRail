@@ -1,4 +1,7 @@
 import flash.events.MouseEvent;
+import flash.filesystem.File;
+import flash.filesystem.FileMode;
+import flash.filesystem.FileStream;
 
 stop();
 
@@ -9,6 +12,7 @@ var plan_mass_limit: int = 0;
 var speedRestrictions: Array = new Array();
 var gripRestrictions: Array = new Array();
 var impedimentRestrictions: Array = new Array();
+plan_title.text = "untitled";
 
 function compute_track_length(){
 	if (plan_maker.track == null){
@@ -600,4 +604,92 @@ plan_remove_impediment.addEventListener(MouseEvent.CLICK, planRemoveImpediment);
 function planRemoveImpediment(event: MouseEvent){
 	data_panel.gotoAndStop(4);
 	input_panel.gotoAndStop(14);
+}
+
+plan_save_btn.addEventListener(MouseEvent.CLICK, planSaveFile);
+function planSaveFile(event: MouseEvent){
+	saveThePlan();
+}
+
+
+function saveThePlan(){
+	if (plan_maker.track == null){
+		showPlanInputError("Could not save file.");
+		return;
+	}
+	var fileText: String = "";
+	fileText += "TITLE: ";
+	fileText += plan_title.text;
+	fileText += "\n";
+	fileText += "MASS: ";
+	fileText += String(plan_mass_limit);
+	fileText += "\n";
+	fileText += "NODES: ";
+	fileText += String(plan_maker.track.length);
+	fileText += "\n";
+	for (var i: int = 0; i < plan_maker.track.length; i++){
+		fileText += String(plan_maker.track[i][0]);
+		fileText += " ";
+		fileText += String(plan_maker.track[i][1]);
+		fileText += "\n";
+	}
+	fileText += "SPEED: ";
+	fileText += String(speedRestrictions.length);
+	fileText += "\n";
+	for (var isf: int = 0; isf < speedRestrictions.length; isf++){
+		fileText += String(speedRestrictions[isf][0]);
+		fileText += " ";
+		fileText += String(speedRestrictions[isf][1]);
+		fileText += " ";
+		fileText += String(speedRestrictions[isf][2]);
+		fileText += " ";
+		fileText += speedRestrictions[isf][3];
+		fileText += "\n";
+	}
+	fileText += "GRIP: ";
+	fileText += String(gripRestrictions.length);
+	fileText += "\n";
+	for (var igf: int = 0; igf < gripRestrictions.length; igf++){
+		fileText += String(gripRestrictions[igf][0]);
+		fileText += " ";
+		fileText += String(gripRestrictions[igf][1]);
+		fileText += " ";
+		fileText += String(gripRestrictions[igf][2]);
+		fileText += "\n";
+	}
+	fileText += "IMPEDIMENT: ";
+	fileText += String(impedimentRestrictions.length);
+	fileText += "\n";
+	for (var irf: int = 0; irf < impedimentRestrictions.length; irf++){
+		fileText += String(impedimentRestrictions[irf][0]);
+		fileText += " ";
+		fileText += String(impedimentRestrictions[irf][1]);
+		fileText += " ";
+		fileText += String(impedimentRestrictions[irf][2]);
+		fileText += "\n";
+	}
+
+	var pattern:RegExp = /[^a-zA-Z ]+/g;
+	var planTitle: String;
+	planTitle = String(plan_title.text).replace(pattern, "");
+
+
+	var currentDir:File = File.documentsDirectory.resolvePath("upRail/plans");
+	if (!currentDir.exists) {
+		currentDir.createDirectory();
+	}
+
+	var file:File = currentDir.resolvePath(planTitle + ".upmap");
+	var fileStream:FileStream = new FileStream();
+	try {
+		fileStream.open(file, FileMode.WRITE);
+		fileStream.writeUTFBytes(fileText);
+		fileStream.close();
+		
+		trace("File saved successfully.");
+		showPlanInputError("Plan Saved");
+	} catch (error:Error) {
+		trace("Failed to save file: " + error.message);
+		showPlanInputError("Could not save file." + error.message);
+	}
 }
