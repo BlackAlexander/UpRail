@@ -246,6 +246,8 @@ function maker(){
 	plan_maker.add_node(0, 50);
 	plan_maker.add_node(1000, 50);
 	
+	readMapFile();
+	
 	plan_maker.update_plan();
 	update_data();
 }
@@ -685,11 +687,60 @@ function saveThePlan(){
 		fileStream.open(file, FileMode.WRITE);
 		fileStream.writeUTFBytes(fileText);
 		fileStream.close();
-		
-		trace("File saved successfully.");
+	
 		showPlanInputError("Plan Saved");
 	} catch (error:Error) {
-		trace("Failed to save file: " + error.message);
-		showPlanInputError("Could not save file." + error.message);
+		showPlanInputError("Could not save file: " + error.message);
+	}
+}
+
+function readMapFile(){
+	if (plan_maker.track == null || chosenMap == null){
+		showPlanInputError("Could not load file.");
+		return;
+	}
+	if (chosenMap == "0"){
+		return;
+	}
+
+	try {
+		var newPlanFile:File = File.documentsDirectory.resolvePath("upRail/plans/" + chosenMap + ".upmap");
+		var fileStream:FileStream = new FileStream();
+		fileStream.open(newPlanFile, FileMode.READ);
+		var fileContent:String = fileStream.readUTFBytes(fileStream.bytesAvailable);
+		fileStream.close();
+	} catch (error:Error){
+		showPlanInputError("Could not read file: " + error.message);
+		return;
+	}
+	var fileLines: Array = fileContent.split(/\n/);
+	plan_title.text = fileLines[0].slice(7);
+	plan_mass_limit = int(fileLines[1].slice(6));
+	var readNodesCount: int = 0;
+	readNodesCount = int(fileLines[2].slice(7));
+	for (var nodeIndexCount: int = 0; nodeIndexCount < readNodesCount; nodeIndexCount++){
+		var nodeLine: Array = fileLines[3 + nodeIndexCount].split(' ');
+		var readNodeX = int(nodeLine[0]);
+		var readNodeY = int(nodeLine[1]);
+		quick_add(readNodeX, readNodeY);
+	}
+
+	speedRestrictions = [];
+	gripRestrictions = [];
+	impedimentRestrictions = [];
+	var speedLimitsCount = int(fileLines[readNodesCount + 3].slice(7));
+	for (var speedIndexCount: int = 0; speedIndexCount < speedLimitsCount; speedIndexCount++){
+		var nodeLineS: Array = fileLines[4 + readNodesCount + speedIndexCount].split(' ');
+		add_speed_limit(nodeLineS[0], nodeLineS[1], nodeLineS[2], nodeLineS[3]);
+	}
+	var gripLimitsCount = int(fileLines[4 + readNodesCount + speedLimitsCount].slice(6));
+	for (var gripIndexCount: int = 0; gripIndexCount < gripLimitsCount; gripIndexCount++){
+		var nodeLineG: Array = fileLines[5 + readNodesCount + speedLimitsCount + gripIndexCount].split(' ');
+		add_grip_limit(nodeLineG[0], nodeLineG[1], nodeLineG[2]);
+	}
+	var impedimentLimitsCount = int(fileLines[5 + readNodesCount + speedLimitsCount + gripLimitsCount].slice(12));
+	for (var impedimentIndexCount: int = 0; impedimentIndexCount < impedimentLimitsCount; impedimentIndexCount++){
+		var nodeLineI: Array = fileLines[6 + readNodesCount + speedLimitsCount + gripLimitsCount + impedimentIndexCount].split(' ');
+		add_impediment_limit(nodeLineI[0], nodeLineI[1], nodeLineI[2]);
 	}
 }
