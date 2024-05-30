@@ -1,0 +1,70 @@
+import flash.events.MouseEvent;
+import flash.filesystem.File;
+import flash.filesystem.FileMode;
+import flash.filesystem.FileStream;
+
+stop();
+
+plans_crud_back_btn.addEventListener(MouseEvent.CLICK, return_to_title);
+
+var chosenMap: String = "0";
+var mapCount: int = 0;
+plans_files_count.text = String(mapCount) + "/12";
+var allPlans: Array = new Array();
+var itemsInstantiated: Boolean = false;
+
+loadPlans();
+
+function loadPlans(){
+    var directory:File = File.documentsDirectory.resolvePath("upRail/plans");
+
+    if (directory.exists && directory.isDirectory) {
+        var filesList: Array = directory.getDirectoryListing();
+        
+		mapCount = filesList.length;
+        for (var i: int = 0; i < filesList.length; i++) {
+            var file:File = filesList[i];
+			if (!file.isDirectory){
+				var thisFileName:String = String(file.name);
+				if (thisFileName.slice(-6) == ".upmap"){
+					allPlans.push(thisFileName.slice(0, -6));
+				}
+			}
+        }
+    }
+}
+
+new_plan_btn.addEventListener(MouseEvent.CLICK, go_to_new_plan);
+function go_to_new_plan(event: MouseEvent){
+	if (mapCount >= 12){
+		plan_pick_status.text = "Map Storage Full";
+	}
+	chosenMap = "0";
+	gotoAndStop(6);
+}
+
+function updatePlansList(){
+	plans_files_count.text = String(mapCount) + "/12";
+	if (mapCount == 0){
+		plan_pick_status.text = "No Maps Created Yet";
+	}
+	for (var newPlanItem: int = 0; newPlanItem < mapCount; newPlanItem++){
+		var toPutMC = new plan_pick_element;
+		plans_holder.addChild(toPutMC);
+		toPutMC.x = 960;
+		toPutMC.y = 220 + (newPlanItem * 60);
+		toPutMC.buttonMode = true;
+		toPutMC.useHandCursor = true;
+		if (toPutMC.map_element_title.text != null){
+			toPutMC.map_element_title.text = allPlans[newPlanItem];
+		}
+		var toPutBtn = new btn_minus_square;
+		plans_holder.addChild(toPutBtn);
+		toPutBtn.x = 1830;
+		toPutBtn.y = 220 + (newPlanItem * 60);
+	}
+}
+
+function beginRead(){
+	updatePlansList();
+}
