@@ -12,8 +12,8 @@ var mapCount: int = 0;
 plans_files_count.text = String(mapCount) + "/12";
 var allPlans: Array = new Array();
 var itemsInstantiated: Boolean = false;
-
-loadPlans();
+var allMCs: Array = new Array();
+plan_pick_status.text = "Click on a plan to access it, or [-] to delete it.";
 
 function loadPlans(){
     var directory:File = File.documentsDirectory.resolvePath("upRail/plans");
@@ -43,7 +43,16 @@ function go_to_new_plan(event: MouseEvent){
 	gotoAndStop(6);
 }
 
+function clearThePlanList(){
+	for (var i: int = 0; i < allMCs.length; i++){
+		plans_holder.removeChild(allMCs[i]);
+	}
+	allMCs = [];
+}
+
 function updatePlansList(){
+	loadPlans();
+	clearThePlanList();
 	if (mapCount == 0){
 		plan_pick_status.text = "No Maps Created Yet";
 	}
@@ -51,6 +60,7 @@ function updatePlansList(){
 	for (var newPlanItem: int = 0; newPlanItem < mapCount; newPlanItem++){
 		var toPutMC = new plan_pick_element;
 		plans_holder.addChild(toPutMC);
+		allMCs.push(toPutMC);
 		toPutMC.x = 960;
 		toPutMC.y = 220 + (newPlanItem * 60);
 		toPutMC.buttonMode = true;
@@ -61,6 +71,7 @@ function updatePlansList(){
 		}
 		var toPutBtn = new btn_minus_square;
 		plans_holder.addChild(toPutBtn);
+		allMCs.push(toPutBtn);
 		toPutBtn.x = 1830;
 		toPutBtn.y = 220 + (newPlanItem * 60);
 		toPutBtn.index = newPlanItem;
@@ -86,7 +97,17 @@ function updatePlansList(){
 			gotoAndStop(6);
 		}
 		function onClickBtn(event: MouseEvent): void {
-			trace(allPlans[event.currentTarget.index]);
+			var fileToDelete:File = File.documentsDirectory.resolvePath("upRail/plans/" + allPlans[event.currentTarget.index] + ".upmap");
+			if (fileToDelete.exists) {
+				try {
+					fileToDelete.deleteFile();
+				} catch (error:Error) {
+					trace("Failed to delete file: " + error.message);
+				}
+			} else {
+				trace("Plan does not exist: " + fileToDelete.nativePath);
+			}
+			updatePlansList();
 		}
 	
 	}
