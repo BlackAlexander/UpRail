@@ -4,7 +4,7 @@ stop();
 
 units_create_back_btn.addEventListener(MouseEvent.CLICK, return_to_unit_selector);
 function return_to_unit_selector(event: MouseEvent){
-	gotoAndStop(1); //!
+	gotoAndStop(7);
 }
 
 var unitp_wheel_grip: int = 100;
@@ -143,7 +143,7 @@ function compute_tractive_power(){
 	if (unit_maker.cars == null){
 		return;
 	}
-	var unitPower: int = 0;
+	var unitPower: Number = 0;
 	for (var i: int = 0; i < unit_maker.cars.length; i++){
 		unitPower += unit_maker.cars[i][2];
 	}
@@ -526,7 +526,6 @@ function readTrainFile(){
 		var readCarType = String(nodeLine[1]);
 		var readCarTraction = Number(nodeLine[2]);
 		var readCarBrake = Number(nodeLine[3]);
-		trace(i, readCarMass, readCarType, readCarTraction, readCarBrake);
 		quick_add_new_car(i, readCarMass, readCarType, readCarTraction, readCarBrake);
 	}
 }
