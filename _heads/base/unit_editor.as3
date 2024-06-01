@@ -195,7 +195,7 @@ function fillUnitDataPanel(){
 	unit_data_panel.udata_unit_mass.text = String(compute_unit_mass());
 	unit_data_panel.udata_unit_tractive_power.text = String(compute_tractive_power());
 	unit_data_panel.udata_unit_braking_power.text = String(compute_braking_power());
-	unit_data_panel.udata_unit_weight_center.text = String(compute_weight_center()) + "m | car_" + String(compute_weight_center_car_index());
+	unit_data_panel.udata_unit_weight_center.text = String(compute_weight_center().toPrecision(3)) + "m | car_" + String(compute_weight_center_car_index());
 	unit_data_panel.udata_wheel_grip.text = String(unitp_wheel_grip);
 	unit_data_panel.udata_maximum_distance.text = String(unitp_maximum_distance);
 	unit_data_panel.udata_angle_restriction_in.text = String(unitp_angle_restriction_in);
@@ -233,6 +233,7 @@ function unit_input_add(uindex: int, umass: int, utype: String, utr: Number, ubr
 	}
 	quick_add_new_car(uindex, umass, utype, utr, ubr);
 	updateUnitData();
+	showUnitInputError("OK");
 }
 
 function unit_input_modify(uindex: int, umass: int, utype: String, utr: Number, ubr: Number){
@@ -257,8 +258,9 @@ function unit_input_modify(uindex: int, umass: int, utype: String, utr: Number, 
 		return;
 	}
 	quick_remove_car(uindex);
-	quick_add_new_car(uindex + 1, umass, utype, utr, ubr);
+	quick_add_new_car(uindex, umass, utype, utr, ubr);
 	updateUnitData();
+	showUnitInputError("OK");
 }
 
 function unit_input_remove(uindex: int){
@@ -278,6 +280,7 @@ function unit_input_remove(uindex: int){
 	}
 	quick_remove_car(uindex);
 	updateUnitData();
+	showUnitInputError("OK");
 }
 
 function unit_input_grip(newValue: int){
@@ -287,6 +290,7 @@ function unit_input_grip(newValue: int){
 	}
 	unitp_wheel_grip = newValue;
 	updateUnitData();
+	showUnitInputError("OK");
 }
 
 function unit_input_max_distance(newValue: int){
@@ -296,6 +300,7 @@ function unit_input_max_distance(newValue: int){
 	}
 	unitp_maximum_distance = newValue;
 	updateUnitData();
+	showUnitInputError("OK");
 }
 
 function unit_input_angle_restriction_in(newValue: int){
@@ -305,6 +310,7 @@ function unit_input_angle_restriction_in(newValue: int){
 	}
 	unitp_angle_restriction_in = newValue;
 	updateUnitData();
+	showUnitInputError("OK");
 }
 
 function unit_input_angle_restriction_out(newValue: int){
@@ -314,6 +320,7 @@ function unit_input_angle_restriction_out(newValue: int){
 	}
 	unitp_angle_restriction_out = newValue;
 	updateUnitData();
+	showUnitInputError("OK");
 }
 
 function unit_input_top_speed(newValue: int){
@@ -323,6 +330,7 @@ function unit_input_top_speed(newValue: int){
 	}
 	unitp_top_speed_restriction = newValue;
 	updateUnitData();
+	showUnitInputError("OK");
 }
 
 function unit_input_max_up_climb(newValue: int){
@@ -332,6 +340,7 @@ function unit_input_max_up_climb(newValue: int){
 	}
 	unitp_max_up_climb = newValue;
 	updateUnitData();
+	showUnitInputError("OK");
 }
 
 function unit_input_max_down_climb(newValue: int){
@@ -341,6 +350,7 @@ function unit_input_max_down_climb(newValue: int){
 	}
 	unitp_max_down_climb = newValue;
 	updateUnitData();
+	showUnitInputError("OK");
 }
 
 unit_add.addEventListener(MouseEvent.CLICK, unitAddCarBtn);
@@ -359,11 +369,11 @@ function unitRemoveCarBtn(event: MouseEvent){
 }
 
 unit_edit_grip.addEventListener(MouseEvent.CLICK, unitEditGrip);
-function unitRemoveCarBtn(event: MouseEvent){
+function unitEditGrip(event: MouseEvent){
 	unit_input_panel.gotoAndStop(7)
 }
 
-unit_edit_max_distnance.addEventListener(MouseEvent.CLICK, unitEditMaxD);
+unit_edit_max_distance.addEventListener(MouseEvent.CLICK, unitEditMaxD);
 function unitEditMaxD(event: MouseEvent){
 	unit_input_panel.gotoAndStop(8)
 }
@@ -380,15 +390,15 @@ function unitEditAngleOut(event: MouseEvent){
 
 unit_edit_top_speed.addEventListener(MouseEvent.CLICK, unitEditTop);
 function unitEditTop(event: MouseEvent){
-	unit_input_panel.gotoAndStop(12)
+	unit_input_panel.gotoAndStop(11)
 }
 
 unit_edit_max_up_climb.addEventListener(MouseEvent.CLICK, unitEditMaxUp);
 function unitEditMaxUp(event: MouseEvent){
-	unit_input_panel.gotoAndStop(13)
+	unit_input_panel.gotoAndStop(12)
 }
 
 unit_edit_max_down_climb.addEventListener(MouseEvent.CLICK, unitEditMaxDown);
 function unitEditMaxDown(event: MouseEvent){
-	unit_input_panel.gotoAndStop(14)
+	unit_input_panel.gotoAndStop(13)
 }
