@@ -68,7 +68,10 @@ function update_unit_listing(){
 }
 
 function loadedUnits(){
-	quick_add_new_car(0, 1, "engine", 1, 10);
+	readTrainFile();
+	if (unit_maker.cars.length == 0){
+		quick_add_new_car(0, 1, "engine", 1, 10);
+	}
 	updateUnitData();
 }
 
@@ -460,7 +463,7 @@ function saveTheUnit(){
 		fileText += String(unit_maker.cars[i][0]) + " ";
 		fileText += String(unit_maker.cars[i][1]) + " ";
 		fileText += String(unit_maker.cars[i][2]) + " ";
-		fileText += String(unit_maker.cars[i][3]) + " ";
+		fileText += String(unit_maker.cars[i][3]) + "\n";
 	}
 
 	var pattern:RegExp = /[^a-zA-Z ]+/g;
@@ -483,5 +486,47 @@ function saveTheUnit(){
 		showUnitInputError("Unit Saved");
 	} catch (error:Error) {
 		showUnitInputError("Could not save file: " + error.message);
+	}
+}
+
+
+function readTrainFile(){
+	if (unit_maker.cars == null || chosenTrain == null){
+		showUnitInputError("Could not load file.");
+		return;
+	}
+	if (chosenTrain == "0"){
+		return;
+	}
+
+	try {
+		var newUnitFile:File = File.documentsDirectory.resolvePath("upRail/units/" + chosenTrain + ".uptrain");
+		var fileStream:FileStream = new FileStream();
+		fileStream.open(newUnitFile, FileMode.READ);
+		var fileContent:String = fileStream.readUTFBytes(fileStream.bytesAvailable);
+		fileStream.close();
+	} catch (error:Error){
+		showPlanInputError("Could not read file: " + error.message);
+		return;
+	}
+	var fileLines: Array = fileContent.split(/\n/);
+	unit_title.text = fileLines[0].slice(7);
+	unitp_wheel_grip = int(fileLines[1].slice(12));
+	unitp_maximum_distance = int(fileLines[2].slice(30));
+	unitp_angle_restriction_in = int(fileLines[3].slice(22));
+	unitp_angle_restriction_out = int(fileLines[4].slice(23));
+	unitp_top_speed_restriction = int(fileLines[5].slice(23));
+	unitp_max_up_climb = int(fileLines[6].slice(25));
+	unitp_max_down_climb = int(fileLines[7].slice(27));
+	var fileCars: int = 0;
+	fileCars = int(fileLines[8].slice(6));
+	for (var i: int = 0; i < fileCars; i++){
+		var nodeLine: Array = fileLines[9 + i].split(' ');
+		var readCarMass = int(nodeLine[0]);
+		var readCarType = String(nodeLine[1]);
+		var readCarTraction = Number(nodeLine[2]);
+		var readCarBrake = Number(nodeLine[3]);
+		trace(i, readCarMass, readCarType, readCarTraction, readCarBrake);
+		quick_add_new_car(i, readCarMass, readCarType, readCarTraction, readCarBrake);
 	}
 }
