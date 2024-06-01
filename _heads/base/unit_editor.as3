@@ -1,3 +1,5 @@
+import flash.events.MouseEvent;
+
 stop();
 
 units_create_back_btn.addEventListener(MouseEvent.CLICK, return_to_unit_selector);
@@ -339,4 +341,54 @@ function unit_input_max_down_climb(newValue: int){
 	}
 	unitp_max_down_climb = newValue;
 	updateUnitData();
+}
+
+unit_add.addEventListener(MouseEvent.CLICK, unitAddCarBtn);
+function unitAddCarBtn(event: MouseEvent){
+	unit_input_panel.gotoAndStop(2)
+}
+
+unit_edit.addEventListener(MouseEvent.CLICK, unitEditCarBtn);
+function unitEditCarBtn(event: MouseEvent){
+	unit_input_panel.gotoAndStop(4)
+}
+
+unit_remove.addEventListener(MouseEvent.CLICK, unitRemoveCarBtn);
+function unitRemoveCarBtn(event: MouseEvent){
+	unit_input_panel.gotoAndStop(6)
+}
+
+unit_edit_grip.addEventListener(MouseEvent.CLICK, unitEditGrip);
+function unitRemoveCarBtn(event: MouseEvent){
+	unit_input_panel.gotoAndStop(7)
+}
+
+unit_edit_max_distnance.addEventListener(MouseEvent.CLICK, unitEditMaxD);
+function unitEditMaxD(event: MouseEvent){
+	unit_input_panel.gotoAndStop(8)
+}
+
+unit_edit_angle_restriction_in.addEventListener(MouseEvent.CLICK, unitEditAngleIn);
+function unitEditAngleIn(event: MouseEvent){
+	unit_input_panel.gotoAndStop(9)
+}
+
+unit_edit_angle_restriction_out.addEventListener(MouseEvent.CLICK, unitEditAngleOut);
+function unitEditAngleOut(event: MouseEvent){
+	unit_input_panel.gotoAndStop(10)
+}
+
+unit_edit_top_speed.addEventListener(MouseEvent.CLICK, unitEditTop);
+function unitEditTop(event: MouseEvent){
+	unit_input_panel.gotoAndStop(12)
+}
+
+unit_edit_max_up_climb.addEventListener(MouseEvent.CLICK, unitEditMaxUp);
+function unitEditMaxUp(event: MouseEvent){
+	unit_input_panel.gotoAndStop(13)
+}
+
+unit_edit_max_down_climb.addEventListener(MouseEvent.CLICK, unitEditMaxDown);
+function unitEditMaxDown(event: MouseEvent){
+	unit_input_panel.gotoAndStop(14)
 }
