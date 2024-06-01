@@ -58,30 +58,7 @@ function update_unit_listing(){
 }
 
 function loadedUnits(){
-	quick_add_new_car(0, 1, "engine", 0, 0);
-	quick_add_new_car(1, 2, "load", 0, 0);
-	quick_add_new_car(2, 3, "load", 0, 0);
-	quick_add_new_car(3, 4, "load", 0, 0);
-	quick_add_new_car(4, 5, "load", 0, 0);
-	quick_add_new_car(5, 6, "load", 0, 0);
-	quick_add_new_car(6, 7, "load", 0, 0);
-	quick_add_new_car(7, 8, "engine", 5400.03, 563.523);
-	quick_add_new_car(8, 9, "load", 0, 0);
-	quick_add_new_car(9, 10, "load", 0, 0);
-	quick_add_new_car(10, 11, "load", 0, 0);
-	quick_add_new_car(11, 12, "load", 0, 0);
-	quick_add_new_car(12, 13, "load", 0, 0);
-	quick_add_new_car(13, 14, "load", 0, 0);
-	quick_add_new_car(14, 15, "load", 0, 0);
-	quick_add_new_car(15, 16, "load", 0, 0);
-	quick_add_new_car(16, 17, "load", 0, 0);
-	quick_add_new_car(17, 18, "load", 0, 0);
-	quick_add_new_car(18, 19, "load", 0, 0);
-	quick_add_new_car(19, 20, "load", 0, 0);
-	quick_add_new_car(20, 21, "load", 0, 0);
-	quick_add_new_car(21, 22, "load", 0, 0);
-	quick_add_new_car(22, 23, "load", 0, 0);
-	quick_add_new_car(23, 12345678, "engine", 12345678, 12345678);
+	quick_add_new_car(0, 1, "engine", 1, 10);
 	updateUnitData();
 }
 
@@ -103,4 +80,99 @@ function quick_remove_car(carIndex: int){
 		return;
 	}
 	unit_maker.removeCarByIndex(carIndex);
+}
+
+function compute_unit_car_length(){
+	return 20;
+}
+
+function compute_unit_length(){
+	if (unit_maker.cars == null){
+		return;
+	}
+	return (unit_maker.cars.length * 20);
+}
+
+function compute_unit_length_spaced(){
+	if (unit_maker.cars == null){
+		return;
+	}
+	return (unit_maker.cars.length * 21);
+}
+
+function compute_load_count(){
+	if (unit_maker.cars == null){
+		return;
+	}
+	return unit_maker.loadCount;
+}
+
+function compute_engine_count(){
+	if (unit_maker.cars == null){
+		return;
+	}
+	return unit_maker.engineCount;
+}
+
+function compute_unit_mass(){
+	if (unit_maker.cars == null){
+		return;
+	}
+	var unitMass: int = 0;
+	for (var i: int = 0; i < unit_maker.cars.length; i++){
+		unitMass += unit_maker.cars[i][0];
+	}
+	return unitMass;
+}
+
+function compute_tractive_power(){
+	if (unit_maker.cars == null){
+		return;
+	}
+	var unitPower: int = 0;
+	for (var i: int = 0; i < unit_maker.cars.length; i++){
+		unitPower += unit_maker.cars[i][2];
+	}
+	return unitPower;
+}
+
+function compute_braking_power(){
+	if (unit_maker.cars == null){
+		return;
+	}
+	var unitBrake: int = 0;
+	for (var i: int = 0; i < unit_maker.cars.length; i++){
+		unitBrake += unit_maker.cars[i][3];
+	}
+	return unitBrake;
+}
+
+function compute_weight_center(){
+	if (unit_maker.cars == null){
+		return;
+	}
+	var momentSum: Number = 0;
+	for (var i: int = 0; i < unit_maker.cars.length; i++){
+		var currentCarCenter: Number;
+		var currentCarMoment: Number;
+		currentCarCenter = i*21 + (20/2);
+		currentCarMoment = currentCarMoment * unit_maker.cars[0];
+		momentSum += currentCarMoment;
+	}
+	return momentSum/(compute_unit_mass());
+}
+
+function compute_weight_center_car_index(){
+	if (unit_maker.cars == null){
+		return;
+	}
+	var weight_center: Number = compute_weight_center();
+	for (var i: int = 0; i < unit_maker.cars.length; i++){
+		var leftInt: Number = 21*i;
+		var rightInt: Number = 21*i + 20;
+		if (leftInt <= weight_center && weight_center <= rightInt){
+			return i + 1;
+		}
+	}
+	return 0;
 }
