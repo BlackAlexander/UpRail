@@ -193,16 +193,16 @@ function fillUnitDataPanel(){
 	unit_data_panel.udata_unit_length.text = String(compute_unit_length()) + "m|" + String(compute_unit_length_spaced()) + "m";
 	unit_data_panel.udata_car_count.text = String(compute_engine_count()) + "E|" + String(compute_load_count()) + "L";
 	unit_data_panel.udata_unit_mass.text = String(compute_unit_mass());
-	unit_data_panel.udata_unit_tractive_power.text = String(compute_tractive_power());
-	unit_data_panel.udata_unit_braking_power.text = String(compute_braking_power());
+	unit_data_panel.udata_unit_tractive_power.text = String(compute_tractive_power()) + "kW";
+	unit_data_panel.udata_unit_braking_power.text = String(compute_braking_power()) + "N";
 	unit_data_panel.udata_unit_weight_center.text = String(compute_weight_center().toPrecision(3)) + "m | car_" + String(compute_weight_center_car_index());
 	unit_data_panel.udata_wheel_grip.text = String(unitp_wheel_grip);
-	unit_data_panel.udata_maximum_distance.text = String(unitp_maximum_distance);
-	unit_data_panel.udata_angle_restriction_in.text = String(unitp_angle_restriction_in);
-	unit_data_panel.udata_angle_restriction_out.text = String(unitp_angle_restriction_out);
-	unit_data_panel.udata_top_speed_restriction.text = String(unitp_top_speed_restriction);
-	unit_data_panel.udata_max_upwards_climb_angle.text = String(unitp_max_up_climb);
-	unit_data_panel.udata_max_downwards_climb_angle.text = String(unitp_max_down_climb);
+	unit_data_panel.udata_maximum_distance.text = String(unitp_maximum_distance) + "m";
+	unit_data_panel.udata_angle_restriction_in.text = String(unitp_angle_restriction_in) + "°";
+	unit_data_panel.udata_angle_restriction_out.text = String(unitp_angle_restriction_out) + "°";
+	unit_data_panel.udata_top_speed_restriction.text = String(unitp_top_speed_restriction) + "m/s";
+	unit_data_panel.udata_max_upwards_climb_angle.text = String(unitp_max_up_climb) + "%";
+	unit_data_panel.udata_max_downwards_climb_angle.text = String(unitp_max_down_climb) + "%";
 }
 
 function showUnitInputError(theMessage: String){
@@ -217,6 +217,10 @@ function unit_input_add(uindex: int, umass: int, utype: String, utr: Number, ubr
 	}
 	if (uindex < 0 || uindex > unit_maker.cars.length){
 		showUnitInputError("Index Out of Bounds");
+		return;
+	}
+	if (unit_maker.cars.length == 24){
+		showUnitInputError("Unit Length Exceeded");
 		return;
 	}
 	if (umass <= 0 || umass > 99999999){
