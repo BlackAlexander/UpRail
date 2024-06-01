@@ -5,6 +5,14 @@ function return_to_unit_selector(event: MouseEvent){
 	gotoAndStop(1); //!
 }
 
+var unitp_wheel_grip: int = 100;
+var unitp_maximum_distance: int = 0;
+var unitp_angle_restriction_out: int = 0;
+var unitp_angle_restriction_in: int = 0;
+var unitp_top_speed_restriction: int = 0;
+var unitp_max_up_climb: int = 0;
+var unitp_max_down_climb: int = 0;
+
 function add8spaces(num: Number){
 	var result: String = "";
 	for(var i: int = 0; i < 8 - String(num).length; i++){
@@ -66,6 +74,7 @@ function updateUnitData(){
 	unit_car_count.text = String(unit_maker.cars.length) + "/24";
 	update_unit_listing();
 	unit_maker.updateCars();
+	fillUnitDataPanel();
 }
 
 function quick_add_new_car(carIndex: int, carMass: int, carType: String, engineForce: Number, brakingForce: Number){
@@ -156,7 +165,7 @@ function compute_weight_center(){
 		var currentCarCenter: Number;
 		var currentCarMoment: Number;
 		currentCarCenter = i*21 + (20/2);
-		currentCarMoment = currentCarMoment * unit_maker.cars[0];
+		currentCarMoment = currentCarCenter * unit_maker.cars[i][0];
 		momentSum += currentCarMoment;
 	}
 	return momentSum/(compute_unit_mass());
@@ -175,4 +184,21 @@ function compute_weight_center_car_index(){
 		}
 	}
 	return 0;
+}
+
+function fillUnitDataPanel(){
+	unit_data_panel.udata_car_length.text = String(compute_unit_car_length());
+	unit_data_panel.udata_unit_length.text = String(compute_unit_length()) + "m|" + String(compute_unit_length_spaced()) + "m";
+	unit_data_panel.udata_car_count.text = String(compute_engine_count()) + "E|" + String(compute_load_count()) + "L";
+	unit_data_panel.udata_unit_mass.text = String(compute_unit_mass());
+	unit_data_panel.udata_unit_tractive_power.text = String(compute_tractive_power());
+	unit_data_panel.udata_unit_braking_power.text = String(compute_braking_power());
+	unit_data_panel.udata_unit_weight_center.text = String(compute_weight_center()) + "m | car_" + String(compute_weight_center_car_index());
+	unit_data_panel.udata_wheel_grip.text = String(unitp_wheel_grip);
+	unit_data_panel.udata_maximum_distance.text = String(unitp_maximum_distance);
+	unit_data_panel.udata_angle_restriction_in.text = String(unitp_angle_restriction_in);
+	unit_data_panel.udata_angle_restriction_out.text = String(unitp_angle_restriction_out);
+	unit_data_panel.udata_top_speed_restriction.text = String(unitp_top_speed_restriction);
+	unit_data_panel.udata_max_upwards_climb_angle.text = String(unitp_max_up_climb);
+	unit_data_panel.udata_max_downwards_climb_angle.text = String(unitp_max_down_climb);
 }
