@@ -261,8 +261,18 @@ function unit_input_modify(uindex: int, umass: int, utype: String, utr: Number, 
 		showUnitInputError("Braking Force Out of Bounds");
 		return;
 	}
+	if (compute_engine_count() == 1){
+		if (unit_maker.cars[uindex][1] == "engine" && utype != "engine"){
+			showUnitInputError("Unit Must Have at Least One Engine");
+			return;
+		}
+	}
+	var oldLength = unit_maker.cars.length;
 	quick_remove_car(uindex);
 	quick_add_new_car(uindex, umass, utype, utr, ubr);
+	if (unit_maker.cars.length > oldLength){
+		quick_remove_car(uindex + 1);
+	}
 	updateUnitData();
 	showUnitInputError("OK");
 }
@@ -405,4 +415,73 @@ function unitEditMaxUp(event: MouseEvent){
 unit_edit_max_down_climb.addEventListener(MouseEvent.CLICK, unitEditMaxDown);
 function unitEditMaxDown(event: MouseEvent){
 	unit_input_panel.gotoAndStop(13)
+}
+
+
+unit_save_btn.addEventListener(MouseEvent.CLICK, unitSaveFile);
+function unitSaveFile(event: MouseEvent){
+	saveTheUnit();
+}
+
+function saveTheUnit(){
+	if (unit_maker.cars == null){
+		showUnitInputError("Could Not Save File");
+		return;
+	}
+	var fileText: String = "";
+	fileText += "TITLE: ";
+	fileText += unit_title.text;
+	fileText += "\n";
+	fileText += "WHEEL_GRIP: ";
+	fileText += String(unitp_wheel_grip);
+	fileText += "\n";
+	fileText += "MAXIMUM_DISTANCE_RESTRICTION: ";
+	fileText += String(unitp_maximum_distance);
+	fileText += "\n";
+	fileText += "ANGLE_RESTRICTION_IN: ";
+	fileText += String(unitp_angle_restriction_in);
+	fileText += "\n";
+	fileText += "ANGLE_RESTRICTION_OUT: ";
+	fileText += String(unitp_angle_restriction_out);
+	fileText += "\n";
+	fileText += "TOP_SPEED_RESTRICTION: ";
+	fileText += String(unitp_top_speed_restriction);
+	fileText += "\n";
+	fileText += "MAX_UPWARDS_CLIMB_ANGLE: ";
+	fileText += String(unitp_max_up_climb);
+	fileText += "\n";
+	fileText += "MAX_DOWNWARDS_CLIMB_ANGLE: ";
+	fileText += String(unitp_max_down_climb);
+	fileText += "\n";
+	fileText += "CARS: ";
+	fileText += String(unit_maker.cars.length);
+	fileText += "\n";
+	for (var i: int = 0; i < unit_maker.cars.length; i++){
+		fileText += String(unit_maker.cars[i][0]) + " ";
+		fileText += String(unit_maker.cars[i][1]) + " ";
+		fileText += String(unit_maker.cars[i][2]) + " ";
+		fileText += String(unit_maker.cars[i][3]) + " ";
+	}
+
+	var pattern:RegExp = /[^a-zA-Z ]+/g;
+	var unitTitle: String;
+	unitTitle = String(unit_title.text).replace(pattern, "");
+
+
+	var currentDir:File = File.documentsDirectory.resolvePath("upRail/units");
+	if (!currentDir.exists) {
+		currentDir.createDirectory();
+	}
+
+	var file:File = currentDir.resolvePath(unitTitle + ".uptrain");
+	var fileStream:FileStream = new FileStream();
+	try {
+		fileStream.open(file, FileMode.WRITE);
+		fileStream.writeUTFBytes(fileText);
+		fileStream.close();
+	
+		showUnitInputError("Unit Saved");
+	} catch (error:Error) {
+		showUnitInputError("Could not save file: " + error.message);
+	}
 }
