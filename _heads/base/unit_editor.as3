@@ -1,0 +1,106 @@
+stop();
+
+units_create_back_btn.addEventListener(MouseEvent.CLICK, return_to_unit_selector);
+function return_to_unit_selector(event: MouseEvent){
+	gotoAndStop(1); //!
+}
+
+function add8spaces(num: Number){
+	var result: String = "";
+	for(var i: int = 0; i < 8 - String(num).length; i++){
+		result += " ";
+	}
+	return result + String(num);
+}
+
+function add32spaces(num: int){
+	var result: String = "";
+	for(var i: int = 0; i < 29 - String(num).length; i++){
+		result += " ";
+	}
+	return result + String(num);
+}
+
+function update_unit_listing(){
+	if (unit_maker.cars == null){
+		return;
+	}
+	if (unit_listing.the_list == null){
+		return;
+	}
+	unit_listing.the_list.text = "";
+	var finalString: String = "";
+	for (var i:int = 0; i < unit_maker.cars.length; i++){
+		var currentCar = unit_maker.cars[i];
+		var currentString: String = "";
+		if (i < 9) {
+			currentString += "0";
+		}
+		currentString += String(i + 1);
+		currentString += ": ";
+		if (currentCar[1] == "engine"){
+			currentString += "ENGINE "; 
+			currentString += add8spaces(currentCar[2]);
+			currentString += "kW ";
+			currentString += add8spaces(currentCar[3]);
+			currentString += "N ";
+			currentString += add8spaces(currentCar[0]);
+			currentString += "KG";
+		} else {
+			currentString += "LOAD   ";
+			currentString += add32spaces(currentCar[0]);
+			currentString += "KG";
+		}
+		currentString += '\n';
+		finalString += currentString;
+	}
+	unit_listing.the_list.text = finalString;
+}
+
+function loadedUnits(){
+	quick_add_new_car(0, 1, "engine", 0, 0);
+	quick_add_new_car(1, 2, "load", 0, 0);
+	quick_add_new_car(2, 3, "load", 0, 0);
+	quick_add_new_car(3, 4, "load", 0, 0);
+	quick_add_new_car(4, 5, "load", 0, 0);
+	quick_add_new_car(5, 6, "load", 0, 0);
+	quick_add_new_car(6, 7, "load", 0, 0);
+	quick_add_new_car(7, 8, "engine", 5400.03, 563.523);
+	quick_add_new_car(8, 9, "load", 0, 0);
+	quick_add_new_car(9, 10, "load", 0, 0);
+	quick_add_new_car(10, 11, "load", 0, 0);
+	quick_add_new_car(11, 12, "load", 0, 0);
+	quick_add_new_car(12, 13, "load", 0, 0);
+	quick_add_new_car(13, 14, "load", 0, 0);
+	quick_add_new_car(14, 15, "load", 0, 0);
+	quick_add_new_car(15, 16, "load", 0, 0);
+	quick_add_new_car(16, 17, "load", 0, 0);
+	quick_add_new_car(17, 18, "load", 0, 0);
+	quick_add_new_car(18, 19, "load", 0, 0);
+	quick_add_new_car(19, 20, "load", 0, 0);
+	quick_add_new_car(20, 21, "load", 0, 0);
+	quick_add_new_car(21, 22, "load", 0, 0);
+	quick_add_new_car(22, 23, "load", 0, 0);
+	quick_add_new_car(23, 12345678, "engine", 12345678, 12345678);
+	updateUnitData();
+}
+
+function updateUnitData(){
+	unit_car_count.text = String(unit_maker.cars.length) + "/24";
+	update_unit_listing();
+	unit_maker.updateCars();
+}
+
+function quick_add_new_car(carIndex: int, carMass: int, carType: String, engineForce: Number, brakingForce: Number){
+	if (unit_maker.cars == null){
+		return;
+	}
+	unit_maker.addNewCar(carIndex, carMass, carType, engineForce, brakingForce);
+}
+
+function quick_remove_car(carIndex: int){
+	if (unit_maker.cars == null){
+		return;
+	}
+	unit_maker.removeCarByIndex(carIndex);
+}

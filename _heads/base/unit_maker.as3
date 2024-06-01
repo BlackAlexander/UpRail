@@ -12,6 +12,9 @@ function addNewCar(carIndex: int, carMass: int, carType: String, engineForce: Nu
 	if (carIndex < 0 || carMass < 0 || engineForce < 0 || brakingForce < 0){
 		return;
 	}
+	if (carIndex > cars.length){
+		return;
+	}
 	if (carType == "load"){
 		loadCount++;
 	} else {
@@ -25,36 +28,11 @@ function addNewCar(carIndex: int, carMass: int, carType: String, engineForce: Nu
 	cars.insertAt(carIndex, newCar);
 }
 
-addNewCar(0, 2000, "engine", 200, 400);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-addNewCar(0, 2000, "load", 0, 0);
-
 function removeCarByIndex(carIndex: int){
 	if (carIndex > cars.length){
 		return;
 	}
-	var carToRemove = cars[carIndex + 1];
+	var carToRemove = cars[carIndex];
 	if (engineCount == 1 && carToRemove[1] == "engine"){
 		return;
 	}
@@ -63,7 +41,7 @@ function removeCarByIndex(carIndex: int){
 	} else {
 		loadCount--;
 	}
-	cars.removeAt(carIndex + 1);
+	cars.removeAt(carIndex);
 }
 
 function clearPaintedCars(){
@@ -85,9 +63,14 @@ function paintCars(){
 		newCar.scaleX = 0.6;
 		newCar.scaleY = 0.6;
 		newCar.y = 0;
-		newCar.x = -1*(cars.length/2)*70 + 35 + 70*i;
+		newCar.x = -1*(cars.length/2)*70 + 35 + 70*(cars.length - i - 1);
 		carsChildren.push(newCar);
 	}
 }
 
-paintCars();
+function updateCars(){
+	clearPaintedCars();
+	paintCars();
+}
+
+MovieClip(root).loadedUnits();
