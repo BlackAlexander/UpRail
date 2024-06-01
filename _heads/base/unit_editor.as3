@@ -202,3 +202,141 @@ function fillUnitDataPanel(){
 	unit_data_panel.udata_max_upwards_climb_angle.text = String(unitp_max_up_climb);
 	unit_data_panel.udata_max_downwards_climb_angle.text = String(unitp_max_down_climb);
 }
+
+function showUnitInputError(theMessage: String){
+	unit_input_panel.gotoAndStop(14);
+	unit_input_panel.input_message_field.text = theMessage;
+	unit_input_panel.play();
+}
+
+function unit_input_add(uindex: int, umass: int, utype: String, utr: Number, ubr: Number){
+	if (unit_maker.cars == null){
+		return;
+	}
+	if (uindex < 0 || uindex > unit_maker.cars.length){
+		showUnitInputError("Index Out of Bounds");
+		return;
+	}
+	if (umass <= 0 || umass > 99999999){
+		showUnitInputError("Mass Out of Bounds");
+		return;
+	}
+	if (utr < 0 || String(utr).length > 8){
+		showUnitInputError("Traction Power Put of Bounds");
+		return;
+	}
+	if (ubr < 0 || String(ubr).length > 8){
+		showUnitInputError("Braking Force Out of Bounds");
+		return;
+	}
+	quick_add_new_car(uindex, umass, utype, utr, ubr);
+	updateUnitData();
+}
+
+function unit_input_modify(uindex: int, umass: int, utype: String, utr: Number, ubr: Number){
+	if (unit_maker.cars == null){
+		return;
+	}
+	uindex--;
+	if (uindex < 0 || uindex >= unit_maker.cars.length){
+		showUnitInputError("Index Out of Bounds");
+		return;
+	}
+	if (umass <= 0 || umass > 99999999){
+		showUnitInputError("Mass Out of Bounds");
+		return;
+	}
+	if (utr < 0 || String(utr).length > 8){
+		showUnitInputError("Traction Power out of Bounds");
+		return;
+	}
+	if (ubr < 0 || String(ubr).length > 8){
+		showUnitInputError("Braking Force Out of Bounds");
+		return;
+	}
+	quick_remove_car(uindex);
+	quick_add_new_car(uindex + 1, umass, utype, utr, ubr);
+	updateUnitData();
+}
+
+function unit_input_remove(uindex: int){
+	if (unit_maker.cars == null){
+		return;
+	}
+	uindex--;
+	if (uindex < 0 || uindex >= unit_maker.cars.length){
+		showUnitInputError("Index Out of Bounds");
+		return;
+	}
+	if (compute_engine_count() == 1){
+		if (unit_maker.cars[uindex][1] == "engine"){
+			showUnitInputError("Unit Must Have at Least One Engine");
+			return;
+		}
+	}
+	quick_remove_car(uindex);
+	updateUnitData();
+}
+
+function unit_input_grip(newValue: int){
+	if (newValue < 0 || newValue > 100){
+		showUnitInputError("Value Out of Bounds");
+		return;
+	}
+	unitp_wheel_grip = newValue;
+	updateUnitData();
+}
+
+function unit_input_max_distance(newValue: int){
+	if (newValue < 0 || newValue > 9999999){
+		showUnitInputError("Value Out of Bounds");
+		return;
+	}
+	unitp_maximum_distance = newValue;
+	updateUnitData();
+}
+
+function unit_input_angle_restriction_in(newValue: int){
+	if (newValue < 0 || newValue > 180){
+		showUnitInputError("Value Out of Bounds");
+		return;
+	}
+	unitp_angle_restriction_in = newValue;
+	updateUnitData();
+}
+
+function unit_input_angle_restriction_out(newValue: int){
+	if (newValue < 0 || newValue > 180){
+		showUnitInputError("Value Out of Bounds");
+		return;
+	}
+	unitp_angle_restriction_out = newValue;
+	updateUnitData();
+}
+
+function unit_input_top_speed(newValue: int){
+	if (newValue < 0 || newValue > 99999999){
+		showUnitInputError("Value Out of Bounds");
+		return;
+	}
+	unitp_top_speed_restriction = newValue;
+	updateUnitData();
+}
+
+function unit_input_max_up_climb(newValue: int){
+	if (newValue < 0 || newValue > 99999){
+		showUnitInputError("Value Out of Bounds");
+		return;
+	}
+	unitp_max_up_climb = newValue;
+	updateUnitData();
+}
+
+function unit_input_max_down_climb(newValue: int){
+	if (newValue < 0 || newValue > 99999){
+		showUnitInputError("Value Out of Bounds");
+		return;
+	}
+	unitp_max_down_climb = newValue;
+	updateUnitData();
+}
