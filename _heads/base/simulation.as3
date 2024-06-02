@@ -4,6 +4,9 @@ if (selectedUnit == "0" || selectedPlan == "0"){
 	gotoAndStop(9);
 }
 
+var simulationPlan: Array = new Array();
+var simulationUnit: Array = new Array();
+
 var currentSimulationState = "start";
 // start
 // during
@@ -29,19 +32,74 @@ function simulation_proceed(event: MouseEvent){
 }
 
 function readSimulationUnit(){
-	
+	try {
+		var newUnitFile:File = File.documentsDirectory.resolvePath("upRail/units/" + selectedUnit + ".uptrain");
+		var fileStream:FileStream = new FileStream();
+		fileStream.open(newUnitFile, FileMode.READ);
+		var fileContent:String = fileStream.readUTFBytes(fileStream.bytesAvailable);
+		fileStream.close();
+	} catch (error:Error){
+		trace("Could not read file: " + error.message);
+		return;
+	}
+	var fileLines: Array = fileContent.split(/\n/);
+	var fileCars: int = int(fileLines[8].slice(6));
+	for (var i: int = 0; i < fileCars; i++){
+		var nodeLine: Array = fileLines[9 + i].split(' ');
+		var readCarMass = int(nodeLine[0]);
+		var readCarType = String(nodeLine[1]);
+		var readCarTraction = Number(nodeLine[2]);
+		var readCarBrake = Number(nodeLine[3]);
+		simulationUnit.push([readCarType]);
+	}
 }
 
 function readSimulationPlan(){
+	try {
+		var newPlanFile:File = File.documentsDirectory.resolvePath("upRail/plans/" + selectedPlan + ".upmap");
+		var fileStream:FileStream = new FileStream();
+		fileStream.open(newPlanFile, FileMode.READ);
+		var fileContent:String = fileStream.readUTFBytes(fileStream.bytesAvailable);
+		fileStream.close();
+	} catch (error:Error){
+		trace("Could not read file: " + error.message);
+		return;
+	}
+	var fileLines: Array = fileContent.split(/\n/);
+	var readNodesCount: int = 0;
+	readNodesCount = int(fileLines[2].slice(7));
+	for (var nodeIndexCount: int = 0; nodeIndexCount < readNodesCount; nodeIndexCount++){
+		var nodeLine: Array = fileLines[3 + nodeIndexCount].split(' ');
+		var readNodeX = int(nodeLine[0]);
+		var readNodeY = int(nodeLine[1]);
+		simulationPlan.push([readNodeX, readNodeY]);
+	}
+}
+
+function paintSimulationUnit(){
 	
 }
 
-function drawSimulationUnit(){
-	
-}
-
-function drawSimulationPlan(){
-	
+function paintSimulationPlan(){
+	var filling: Shape = new Shape();
+	var matrix: Matrix = new Matrix();
+	matrix.scale(0.1, 0.1);
+	simScreen.addChild(filling);
+	filling.graphics.beginBitmapFill(new TrackMap(), matrix, true, true);
+	filling.graphics.moveTo(0, 550);
+	for (var i: int = 0; i < simulationPlan.length; i++){
+		filling.graphics.lineTo(simulationPlan[i][0], 550 - simulationPlan[i][1]);
+	}
+	filling.graphics.lineTo(1000, 550);
+	filling.graphics.endFill();
+	filling.alpha = 0.5;
+	for (var j: int = 0; j < simulationPlan.length - 1; j++){
+		var newSegment: MovieClip = new MovieClip();
+		simScreen.addChild(newSegment);
+		newSegment.graphics.lineStyle(1, 0x000000);
+		newSegment.graphics.moveTo(simulationPlan[j][0], 550 - simulationPlan[j][1]);
+		newSegment.graphics.lineTo(simulationPlan[j+1][0], 550 - simulationPlan[j+1][1]);
+	}
 }
 
 function setAcceleration(acceleration: int){
@@ -68,3 +126,7 @@ function setSimulationSpeed(simulationSpeed: Number){
 function setSimulationAcceleration(simulationAcceleration: Number){
 	simulation_acceleration.text = String(simulationAcceleration.toPrecision(1)) + "m/s²";
 }
+
+readSimulationUnit();
+readSimulationPlan();
+paintSimulationPlan();
