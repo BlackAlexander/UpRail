@@ -7,6 +7,14 @@ if (selectedUnit == "0" || selectedPlan == "0"){
 var simulationPlan: Array = new Array();
 var simulationUnit: Array = new Array();
 
+var simCarLength: Number = 20;
+var simCarSpace: Number = 1;
+var simCarUnit: Number = simCarLength + simCarSpace;
+var simCarWheelFront: Number = 3.7;
+var simCarWheelRear: Number = 16.3;
+var simCarHeight: Number = 8;
+
+
 var auxiliaryData: Array = new Array();
 
 var currentSimulationState = "start";
@@ -200,9 +208,41 @@ function computeAuxiliaryData(){
 		var auxRightY: Number = auxiliaryData[i + 1][1];
 		auxiliaryData[i][4] = Math.atan2((auxRightY - auxLeftY) , (auxRightX - auxLeftX));
 	}
+}
 
-	for (i = 0; i <= 1000; i++){
-		trace(i, auxiliaryData[i][0], auxiliaryData[i][1].toPrecision(3), auxiliaryData[i][4]);
+function computeDistanceProjection(D: Number, xA: Number, yA: Number, xB: Number, yB: Number){
+    var distanceAB: Number = Math.sqrt(Math.pow(xB - xA, 2) + Math.pow(yB - yA, 2));
+    var r: Number = D / distanceAB;
+    var xN: Number = xA + r * (xB - xA);
+    var yN: Number = yA + r * (yB - yA);
+    return [xN, yN];
+}
+
+function computeDistanceTP(xA: Number, yA: Number, xB: Number, yB: Number){
+	var distanceAB: Number = Math.sqrt(Math.pow(xB - xA, 2) + Math.pow(yB - yA, 2));
+	return distanceAB;
+}
+
+function computeWalkOnTrack(Dist: Number, xA: Number, yA: Number){
+	var leftNode: Array = auxiliaryData[xA][2];
+	var leftNodeX: Number = leftNode[1];
+	var leftNodeY: Number = leftNode[2];
+	var leftDistance: Number = Dist;
+	while (leftDistance > 0){
+		var toNode: Number = computeDistanceTP(xA, yA, leftNodeX, leftNodeY);
+		if (leftDistance <= toNode){
+			return computeDistanceProjection(leftDistance, xA, yA, leftNodeX, leftNodeY);
+		} else {
+			leftDistance -= toNode;
+			xA = leftNodeX;
+			yA = leftNodeY;
+			leftNode = auxiliaryData[xA][2];
+			leftNodeX = leftNode[1];
+			leftNodeY = leftNode[2];
+			if (leftNodeX == 0){
+				return [leftNodeX, leftNodeY];
+			}
+		}
 	}
 }
 
