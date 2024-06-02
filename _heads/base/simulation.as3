@@ -7,6 +7,8 @@ if (selectedUnit == "0" || selectedPlan == "0"){
 var simulationPlan: Array = new Array();
 var simulationUnit: Array = new Array();
 
+var auxiliaryData: Array = new Array();
+
 var currentSimulationState = "start";
 // start
 // during
@@ -127,6 +129,61 @@ function setSimulationAcceleration(simulationAcceleration: Number){
 	simulation_acceleration.text = String(simulationAcceleration.toPrecision(1)) + "m/s²";
 }
 
+function computeAuxiliaryData(){
+	// [isNode, y, leftNode[i,x,y], rightNode[i,x,y], angle]
+	//     0    1       2                3              4
+	var i: int = 0;
+	
+	// fill Array
+	for (i = 0; i <= 1000; i++){
+		auxiliaryData.push([false, 0, [0, 0], [0, 0], 0])
+	}
+
+	auxiliaryData[0][0] = true;
+	auxiliaryData[0][1] = simulationPlan[0][1];
+	auxiliaryData[0][2] = null;
+	auxiliaryData[0][3] = [1, simulationPlan[1][0], simulationPlan[1][1]];
+
+	auxiliaryData[1000][0] = true;
+	auxiliaryData[1000][1] = simulationPlan[simulationPlan.length - 1][1];
+	auxiliaryData[1000][2] = [simulationPlan.length - 2, simulationPlan[simulationPlan.length - 2][0], simulationPlan[simulationPlan.length - 2][1]];
+	auxiliaryData[1000][3] = null;
+
+	// fill leftNode, rightNode and isNode
+	var lastAuxNode: int = 0;
+	var nextAuxNode: int = 1;
+	for (i = 1; i <= 999; i++){
+		var currentLeftNode: Array = [0, 0, 0];
+		currentLeftNode[0] = lastAuxNode;
+		currentLeftNode[1] = simulationPlan[lastAuxNode][0];
+		currentLeftNode[2] = simulationPlan[lastAuxNode][1];
+		auxiliaryData[i][2] = currentLeftNode;
+		
+		if (simulationPlan[nextAuxNode][0] == i){
+			auxiliaryData[i][0] = true;
+			auxiliaryData[i][1] = simulationPlan[nextAuxNode][1];
+			lastAuxNode++;
+			nextAuxNode++;
+		} else {
+			auxiliaryData[i][0] = false;
+		}
+		
+		var currentRightNode: Array = [0, 0, 0];
+		currentRightNode[0] = nextAuxNode;
+		currentRightNode[1] = simulationPlan[nextAuxNode][0];
+		currentRightNode[2] = simulationPlan[nextAuxNode][1];
+		auxiliaryData[i][2] = currentLeftNode;
+		auxiliaryData[i][3] = currentRightNode;
+	}
+
+
+	for (i = 0; i <= 1000; i++){
+		trace(i, auxiliaryData[i][0], auxiliaryData[i][1], auxiliaryData[i][2], auxiliaryData[i][3]);
+	}
+}
+
 readSimulationUnit();
 readSimulationPlan();
 paintSimulationPlan();
+
+computeAuxiliaryData();
