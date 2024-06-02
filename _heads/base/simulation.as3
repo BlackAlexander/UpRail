@@ -281,6 +281,7 @@ function computeDistanceTP(xA: Number, yA: Number, xB: Number, yB: Number){
 
 function computeWalkOnTrack(Dist: Number, xA: Number, yA: Number){
 	var leftNode: Array = auxiliaryData[int(xA)][2];
+	trace(int(xA), auxiliaryData[int(xA)]);
 	var leftNodeX: Number = leftNode[1];
 	var leftNodeY: Number = leftNode[2];
 	var leftDistance: Number = Dist;
@@ -295,7 +296,7 @@ function computeWalkOnTrack(Dist: Number, xA: Number, yA: Number){
 			leftNode = auxiliaryData[int(xA)][2];
 			leftNodeX = leftNode[1];
 			leftNodeY = leftNode[2];
-			if (leftNodeX == 0){
+			if (xA == 0){
 				return [leftNodeX, leftNodeY];
 			}
 		}
