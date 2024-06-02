@@ -125,12 +125,14 @@ function paintSimulationUnit(){
 	for (i = 0; i < simulationUnit.length; i++){
 		var carType: String = simulationUnit[i];
 		var newCar = new simulator_car;
+		var newCarAngle = auxiliaryData[int(carCenterX)][4] * (180 / Math.PI)
+		var newCarAngleR = auxiliaryData[int(carCenterX)][4]
 		simScreen.addChild(newCar);
 		newCar.scaleX = 0.2;
 		newCar.scaleY = 0.2;
-		newCar.x = carCenterX;
-		newCar.y = 550 - (carCenterY + simCarHeight/2);
-		newCar.rotation = 360 - auxiliaryData[int(carCenterX)][4] * (180 / Math.PI);
+		newCar.x = carCenterX - Math.sin(Math.PI - newCarAngleR)*(simCarHeight/2);
+		newCar.y = 550 - (carCenterY - Math.cos(Math.PI - newCarAngleR)*(simCarHeight/2));
+		newCar.rotation = 360 - newCarAngle;
 		if (carType == "engine"){
 			newCar.gotoAndStop(1);
 		} else {
