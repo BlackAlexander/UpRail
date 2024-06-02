@@ -1,0 +1,70 @@
+stop();
+
+if (selectedUnit == "0" || selectedPlan == "0"){
+	gotoAndStop(9);
+}
+
+var currentSimulationState = "start";
+// start
+// during
+// end
+
+simulation_title.text = "running " + String(selectedUnit) + " on " + String(selectedPlan);
+
+simulation_back_btn.addEventListener(MouseEvent.CLICK, simulation_back);
+function simulation_back(event: MouseEvent){
+	gotoAndStop(9);
+}
+
+simulation_front_btn.addEventListener(MouseEvent.CLICK, simulation_proceed);
+function simulation_proceed(event: MouseEvent){
+	if (currentSimulationState == "start"){
+		currentSimulationState = "during";
+		simulation_front_btn.visible = false;
+	} else if (currentSimulationState == "during"){
+		currentSimulationState = "end";
+	} else if (currentSimulationState == "end"){
+		gotoAndStop(12);
+	}
+}
+
+function readSimulationUnit(){
+	
+}
+
+function readSimulationPlan(){
+	
+}
+
+function drawSimulationUnit(){
+	
+}
+
+function drawSimulationPlan(){
+	
+}
+
+function setAcceleration(acceleration: int){
+	simulation_force.gotoAndStop(acceleration + 101)
+}
+setAcceleration(0);
+
+function setProgress(progress: int){
+	if (progress == 0) {
+		progress = 1;
+	}
+	simulation_progress.gotoAndStop(progress);
+}
+setProgress(1);
+
+function setSimulationDistance(simulationDistance: Number){
+	simulation_distance.text = String(int(simulationDistance)) + "m";
+}
+
+function setSimulationSpeed(simulationSpeed: Number){
+	simulation_speed.text = String(simulationSpeed.toPrecision(1)) + "m/s";
+}
+
+function setSimulationAcceleration(simulationAcceleration: Number){
+	simulation_acceleration.text = String(simulationAcceleration.toPrecision(1)) + "m/s²";
+}
