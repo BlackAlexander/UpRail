@@ -143,11 +143,13 @@ function computeAuxiliaryData(){
 	auxiliaryData[0][1] = simulationPlan[0][1];
 	auxiliaryData[0][2] = null;
 	auxiliaryData[0][3] = [1, simulationPlan[1][0], simulationPlan[1][1]];
+	auxiliaryData[0][4] = 0;
 
 	auxiliaryData[1000][0] = true;
 	auxiliaryData[1000][1] = simulationPlan[simulationPlan.length - 1][1];
 	auxiliaryData[1000][2] = [simulationPlan.length - 2, simulationPlan[simulationPlan.length - 2][0], simulationPlan[simulationPlan.length - 2][1]];
 	auxiliaryData[1000][3] = null;
+	auxiliaryData[1000][4] = 0;
 
 	// fill leftNode, rightNode and isNode
 	var lastAuxNode: int = 0;
@@ -175,10 +177,32 @@ function computeAuxiliaryData(){
 		auxiliaryData[i][2] = currentLeftNode;
 		auxiliaryData[i][3] = currentRightNode;
 	}
+	
+	// fill y
+	for (i = 1; i <= 999; i++){
+		if (!auxiliaryData[i][0]){
+			var aauxLeftX: Number = auxiliaryData[i][2][1];
+			var aauxLeftY: Number = auxiliaryData[i][2][2];
+			var aauxRightX: Number = auxiliaryData[i][3][1];
+			var aauxRightY: Number = auxiliaryData[i][3][2];
+			var aauxCurrentX: Number = i;
+			var t: Number = (aauxCurrentX - aauxLeftX) / (aauxRightX - aauxLeftX);
+			var aauxCurrentY:Number = aauxLeftY + t * (aauxRightY - aauxLeftY);
+			auxiliaryData[i][1] = aauxCurrentY;
+		}
+	}
 
+	// fill angle
+	for (i = 1; i <= 999; i++){
+		var auxLeftX: Number = i - 1;
+		var auxLeftY: Number = auxiliaryData[i - 1][1];
+		var auxRightX: Number = i + 1;
+		var auxRightY: Number = auxiliaryData[i + 1][1];
+		auxiliaryData[i][4] = Math.atan2((auxRightY - auxLeftY) , (auxRightX - auxLeftX));
+	}
 
 	for (i = 0; i <= 1000; i++){
-		trace(i, auxiliaryData[i][0], auxiliaryData[i][1], auxiliaryData[i][2], auxiliaryData[i][3]);
+		trace(i, auxiliaryData[i][0], auxiliaryData[i][1].toPrecision(3), auxiliaryData[i][4]);
 	}
 }
 
