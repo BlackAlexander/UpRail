@@ -111,7 +111,7 @@ function compute_unit_length_spaced(){
 	if (unit_maker.cars == null){
 		return;
 	}
-	return (unit_maker.cars.length * 21);
+	return (unit_maker.cars.length * 22);
 }
 
 function compute_load_count(){
@@ -169,7 +169,7 @@ function compute_weight_center(){
 	for (var i: int = 0; i < unit_maker.cars.length; i++){
 		var currentCarCenter: Number;
 		var currentCarMoment: Number;
-		currentCarCenter = i*21 + (20/2);
+		currentCarCenter = i*22 + (20/2);
 		currentCarMoment = currentCarCenter * unit_maker.cars[i][0];
 		momentSum += currentCarMoment;
 	}
@@ -182,8 +182,8 @@ function compute_weight_center_car_index(){
 	}
 	var weight_center: Number = compute_weight_center();
 	for (var i: int = 0; i < unit_maker.cars.length; i++){
-		var leftInt: Number = 21*i;
-		var rightInt: Number = 21*i + 20;
+		var leftInt: Number = 22*i;
+		var rightInt: Number = 22*i + 20;
 		if (leftInt <= weight_center && weight_center <= rightInt){
 			return i + 1;
 		}

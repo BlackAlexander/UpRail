@@ -7,12 +7,16 @@ if (selectedUnit == "0" || selectedPlan == "0"){
 var simulationPlan: Array = new Array();
 var simulationUnit: Array = new Array();
 
+var simulationData: Array = new Array();
+// [position, AB, acceleration, speed]
+
 var simCarLength: Number = 20;
-var simCarSpace: Number = 1;
+var simCarCenter: Number = simCarLength/2;
+var simCarSpace: Number = 2;
 var simCarUnit: Number = simCarLength + simCarSpace;
 var simCarWheelFront: Number = 3.7;
 var simCarWheelRear: Number = 16.3;
-var simCarHeight: Number = 8;
+var simCarHeight: Number = 10;
 
 
 var auxiliaryData: Array = new Array();
@@ -60,7 +64,7 @@ function readSimulationUnit(){
 		var readCarType = String(nodeLine[1]);
 		var readCarTraction = Number(nodeLine[2]);
 		var readCarBrake = Number(nodeLine[3]);
-		simulationUnit.push([readCarType]);
+		simulationUnit.push(readCarType);
 	}
 }
 
@@ -86,8 +90,58 @@ function readSimulationPlan(){
 	}
 }
 
+function readSimulationData(){
+	try {
+		var newFile:File = File.documentsDirectory.resolvePath("upRail/SIM.uprail");
+		var fileStream:FileStream = new FileStream();
+		fileStream.open(newFile, FileMode.READ);
+		var fileContent:String = fileStream.readUTFBytes(fileStream.bytesAvailable);
+		fileStream.close();
+	} catch (error:Error){
+		trace("Could not read file: " + error.message);
+		return;
+	}
+	var fileLines: Array = fileContent.split(/\n/);
+	var readKeyCount: int = 0;
+	readKeyCount = int(fileLines[0]);
+	for (var keyIndex: int = 0; keyIndex < readKeyCount; keyIndex++){
+		var simLine: Array = fileLines[1 + keyIndex].split(' ');
+		var simTime = int(simLine[0]);
+		var simPosition = Number(simLine[1]);
+		var simAB = int(simLine[2]);
+		var simAcceleration = Number(simLine[3]);
+		var simSpeed = Number(simLine[4]);
+		simulationData.push([simPosition, simAB, simAcceleration, simSpeed]);
+	}
+}
+
 function paintSimulationUnit(){
-	
+	var trainHeadX: Number = simulationData[0][0];
+	var trainHeadY: Number = auxiliaryData[int(trainHeadX)][1];
+	var currentCarCenter = computeWalkOnTrack(simCarCenter, trainHeadX, trainHeadY);
+	var carCenterX = currentCarCenter[0];
+	var carCenterY = currentCarCenter[1];
+	var i: int = 0;
+	for (i = 0; i < simulationUnit.length; i++){
+		var carType: String = simulationUnit[i];
+		var newCar = new simulator_car;
+		simScreen.addChild(newCar);
+		newCar.scaleX = 0.2;
+		newCar.scaleY = 0.2;
+		newCar.x = carCenterX;
+		newCar.y = 550 - (carCenterY + simCarHeight/2);
+		newCar.rotation = 360 - auxiliaryData[int(carCenterX)][4] * (180 / Math.PI);
+		if (carType == "engine"){
+			newCar.gotoAndStop(1);
+		} else {
+			newCar.gotoAndStop(2);
+		}
+		if (i + 1 < simulationUnit.length){
+			currentCarCenter = computeWalkOnTrack(simCarUnit, carCenterX, carCenterY);
+			carCenterX = currentCarCenter[0];
+			carCenterY = currentCarCenter[1];
+		}
+	}
 }
 
 function paintSimulationPlan(){
@@ -224,7 +278,7 @@ function computeDistanceTP(xA: Number, yA: Number, xB: Number, yB: Number){
 }
 
 function computeWalkOnTrack(Dist: Number, xA: Number, yA: Number){
-	var leftNode: Array = auxiliaryData[xA][2];
+	var leftNode: Array = auxiliaryData[int(xA)][2];
 	var leftNodeX: Number = leftNode[1];
 	var leftNodeY: Number = leftNode[2];
 	var leftDistance: Number = Dist;
@@ -236,7 +290,7 @@ function computeWalkOnTrack(Dist: Number, xA: Number, yA: Number){
 			leftDistance -= toNode;
 			xA = leftNodeX;
 			yA = leftNodeY;
-			leftNode = auxiliaryData[xA][2];
+			leftNode = auxiliaryData[int(xA)][2];
 			leftNodeX = leftNode[1];
 			leftNodeY = leftNode[2];
 			if (leftNodeX == 0){
@@ -248,6 +302,7 @@ function computeWalkOnTrack(Dist: Number, xA: Number, yA: Number){
 
 readSimulationUnit();
 readSimulationPlan();
-paintSimulationPlan();
-
+readSimulationData();
 computeAuxiliaryData();
+paintSimulationPlan();
+paintSimulationUnit();
