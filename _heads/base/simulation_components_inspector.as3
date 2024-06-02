@@ -1,0 +1,144 @@
+stop();
+
+if (selectedUnit == "0" || selectedPlan == "0"){
+	gotoAndStop(9);
+}
+
+inspect_back_btn.addEventListener(MouseEvent.CLICK, return_to_component_selector);
+function return_to_component_selector(event: MouseEvent){
+	gotoAndStop(9);
+}
+
+inspection_front_btn.visible = false;
+
+inspection_front_btn.addEventListener(MouseEvent.CLICK, inspection_proceed);
+function inspection_proceed(event: MouseEvent){
+	gotoAndStop(10);
+}
+
+inspection_status.text = "Loading...";
+
+var t1_plan_length: Number = 0;
+var t1_max_length: Number = 0;
+
+var t2_mass_limit: int = 0;
+var t2_unit_mass: int = 0;
+
+var t3_steepest_up_climb: int = 0;
+var t3_max_climb_angle_up: int = 0;
+
+var t4_steepest_down_climb: int = 0;
+var t4_max_climb_angle_down: int = 0;
+
+var t5_narrow_angle_in: int = 0;
+var t5_max_angle_in: int = 0;
+
+var t6_narrow_angle_out: int = 0;
+var t6_max_angle_out: int = 0;
+
+var inspectionPlan: Array = new Array();
+var inspectionUnit: Array = new Array();
+
+var restrictionsGoodToGo: Boolean = true;
+
+function read_inspection_plan(){
+	
+}
+
+function read_inspection_unit(){
+	
+}
+
+function compute_inspection_plan_length(){
+	
+}
+
+function compute_inspection_steepest_up_climb(){
+	
+}
+
+function compute_inspection_steepest_down_climb(){
+	
+}
+
+function compute_inspection_narrowest_angle_in(){
+	
+}
+
+function compute_inspection_narrowest_angle_out(){
+	
+}
+
+function compute_inspection_unit_mass(){
+	
+}
+
+function fill_text(){
+	plan_t1.text = String(t1_plan_length) + "m";
+	unit_t1.text = String(t1_max_length) + "m";
+	plan_t2.text = String(t2_mass_limit) + "kg";
+	unit_t2.text = String(t2_unit_mass) + "kg";
+	plan_t3.text = String(t3_steepest_up_climb) + "%";
+	unit_t3.text = String(t3_max_climb_angle_up) + "%";
+	plan_t4.text = String(t4_steepest_down_climb) + "%";
+	unit_t4.text = String(t4_max_climb_angle_down) + "%";
+	plan_t5.text = String(t5_narrow_angle_in) + "°";
+	unit_t5.text = String(t5_max_angle_in) + "°";
+	plan_t6.text = String(t6_narrow_angle_out) + "°";
+	unit_t6.text = String(t6_max_angle_out) + "°";
+	if (t1_plan_length > t1_max_length){
+		restrictionsGoodToGo = false;
+		plan_t1.textColor = 0xFF0000; 
+		unit_t1.textColor = 0xFF0000; 
+	} else {
+		plan_t1.textColor = 0x00FF00; 
+		unit_t1.textColor = 0x00FF00; 
+	}
+	if (t2_unit_mass > t2_mass_limit){
+		restrictionsGoodToGo = false;
+		plan_t2.textColor = 0xFF0000; 
+		unit_t2.textColor = 0xFF0000; 
+	} else {
+		plan_t2.textColor = 0x00FF00; 
+		unit_t2.textColor = 0x00FF00; 
+	}
+	if (t3_steepest_up_climb > t3_max_climb_angle_up){
+		restrictionsGoodToGo = false;
+		plan_t3.textColor = 0xFF0000; 
+		unit_t3.textColor = 0xFF0000; 
+	} else {
+		plan_t3.textColor = 0x00FF00; 
+		unit_t3.textColor = 0x00FF00; 
+	}
+	if (t4_steepest_down_climb > t4_max_climb_angle_down){
+		restrictionsGoodToGo = false;
+		plan_t4.textColor = 0xFF0000; 
+		unit_t4.textColor = 0xFF0000; 
+	} else {
+		plan_t4.textColor = 0x00FF00; 
+		unit_t4.textColor = 0x00FF00; 
+	}
+	if (t5_narrow_angle_in > t5_max_angle_in){
+		restrictionsGoodToGo = false;
+		plan_t5.textColor = 0xFF0000; 
+		unit_t5.textColor = 0xFF0000; 
+	} else {
+		plan_t5.textColor = 0x00FF00; 
+		unit_t5.textColor = 0x00FF00; 
+	}
+	if (t6_narrow_angle_out > t6_max_angle_out){
+		restrictionsGoodToGo = false;
+		plan_t6.textColor = 0xFF0000; 
+		unit_t6.textColor = 0xFF0000; 
+	} else {
+		plan_t6.textColor = 0x00FF00; 
+		unit_t6.textColor = 0x00FF00; 
+	}
+	if (restricionsGoodToGo){
+		inspection_status.text = "Simulation components are compatible";
+		inspection_front_btn.visible = true;
+	} else {
+		inspection_status.text = "Simulation components are not compatible";
+		inspection_front_btn.visible = false;
+	}
+}
