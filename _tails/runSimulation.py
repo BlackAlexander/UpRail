@@ -14,9 +14,9 @@ plan_length = 0
 
 map_left = [0] * 1001  # closest node to the left
 map_right = [1000] * 1001  # closest node to the right
-map_y = [0.0] * 1001
-map_angle = [0.0] * 1001
-map_is_node = [False] * 1001
+map_y = [0.0] * 1001  # y to given point x
+map_angle = [0.0] * 1001  # angle (rad) of point (x, y(x))
+map_is_node = [False] * 1001  # is or is not node in original map
 
 map_speed_max = [9999] * 1001
 map_speed_min = [0] * 1001
@@ -172,6 +172,12 @@ def fill_plan_data(file_content):
         map_angle[i] = math.atan2((ry-ly), (rx-lx))
 
     start_distance = walk_track_right(unit_length, nodes[0][0], nodes[0][1])[0] + 1  # +1 to correct for any errors
+
+
+def extrapolate_data(left_value, right_value, ms):
+    ms = ms % 1000
+    result = left_value + (right_value - left_value) * (ms / 1000)
+    return result
 
 
 def run_simulation(plan, unit):
