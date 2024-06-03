@@ -8,10 +8,11 @@ comm_path = os.path.join(documents_path, 'upRail', 'COMM.uprail')
 
 
 def restore_test_comm():
-    content = "1\nsharp up down\nCFR"
+    content = "1\ntwenty up\nCFR"
     with open(comm_path, 'w') as file:
         file.write(content)
     print('comm restored')
+
 
 def respond_to_comm():
     try:
