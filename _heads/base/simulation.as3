@@ -115,6 +115,9 @@ function readSimulationData(){
 		var simLine: Array = fileLines[1 + keyIndex].split(' ');
 		var simTime = int(simLine[0]);
 		var simPosition = Number(simLine[1]);
+		if (simPosition > 1000){
+			simPosition = 1000;
+		}
 		var simAB = int(simLine[2]);
 		var simAcceleration = Number(simLine[3]);
 		var simSpeed = Number(simLine[4]);
@@ -360,7 +363,7 @@ function executeKey(){
 
 	var keyLine = simulationData[timeS];
 	var keyLineN = simulationData[nextS];
-	
+
 	var simKDistance: Number;
 	var simKAB: int;
 	var simKSpeed: Number;
@@ -369,7 +372,6 @@ function executeKey(){
 	var simKProgress: int;
 	
 	simKDistance = extrapolateData(keyLine[0], keyLineN[0], timems);
-	trace(keyLine[0], keyLineN[0], simKDistance, timems);
 	simKAB = int(extrapolateData(keyLine[1], keyLineN[1], timems)); 
 	simKAcceleration = extrapolateData(keyLine[2], keyLineN[2], timems); 
 	simKSpeed = extrapolateData(keyLine[3], keyLineN[3], timems);
@@ -379,7 +381,6 @@ function executeKey(){
 	setSimulationSpeed(simKSpeed);
 	setSimulationAcceleration(simKAcceleration);
 	setProgress(simKProgress);
-	
 	var simKAngleL: Number = auxiliaryData[int(keyLine[0])][4] * (180 / Math.PI);
 	var simKAngleR: Number = auxiliaryData[int(keyLineN[0])][4] * (180 / Math.PI);
 	simKAngle = int(extrapolateData(simKAngleL, simKAngleR, timems));
