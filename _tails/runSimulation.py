@@ -1,7 +1,13 @@
 import math
 import os
 
+from physics import get_next_position
+
 documents_path = os.path.join(os.path.expanduser('~'), 'Documents')
+
+gravity = 9.8
+low_efficiency_obstruction: 1
+low_efficiency_timer: 1000
 
 unit_mass = 0
 unit_power = 0
@@ -180,9 +186,38 @@ def extrapolate_data(left_value, right_value, ms):
     return result
 
 
+def run_input(ABinput):
+    """
+    :param ABinput: array with values from -100 (brake) to 100 (accelerate)
+    :return: list of positions
+    """
+
+    positions = [start_distance]
+    last_position = start_distance
+    last_speed = 0
+
+    for AB in ABinput:
+        theta = extrapolate_data(map_angle[int(last_position)], map_angle[int(last_position) + 1], (last_position % 1) * 1000)
+        delta_x = get_next_position(unit_mass, gravity, theta, AB, unit_power*1000, unit_brake, map_grip[int(last_position)], map_friction[int(last_position)], last_speed, last_position)
+        new_position = last_position + delta_x
+        new_speed = delta_x
+        if new_position >= 1000:
+            return positions  # finished successfully
+        if new_position <= start_distance:
+            new_position = last_position
+            new_speed = last_speed
+        positions.append(new_position)
+        last_position = new_position
+        last_speed = new_speed
+        if len(positions) > low_efficiency_timer and new_position < (low_efficiency_timer * low_efficiency_obstruction):
+            return positions  # too slow
+
+    return positions
+
 def run_simulation(plan, unit):
     plan_path = os.path.join(documents_path, 'upRail/plans', plan + '.upmap')
     unit_path = os.path.join(documents_path, 'upRail/units', unit + '.uptrain')
+    env_path = os.path.join(documents_path, 'upRail', 'Environment.uprail')
     try:
         with open(unit_path, 'r') as file:
             content = file.read().split('\n')
@@ -195,3 +230,15 @@ def run_simulation(plan, unit):
             fill_plan_data(content)
     except FileNotFoundError:
         print("SIM_ERROR file not found")
+
+    global gravity, low_efficiency_obstruction, low_efficiency_timer
+    try:
+        with open(env_path, 'r') as file:
+            content = file.read().split('\n')
+            gravity = float(content[1][22:])
+            low_efficiency_obstruction = float(content[2][28:])
+            low_efficiency_timer = float(content[3][22:])
+    except FileNotFoundError:
+        print("SIM_ERROR file not found")
+
+    print(run_input([100]*100))

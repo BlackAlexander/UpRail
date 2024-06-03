@@ -73,8 +73,9 @@ def get_next_position(m, g, theta, AB, t_power, b_force, ug, uf, v, old_distance
     :param uf: -//-
     :param v: -//-
     :param old_distance: previous distance
-    :return: [new_distance, new_speed, new_acceleration]
+    :return: [delta_x]
     """
+    # delta t = 1 s
     force = compute_force(m, g, theta, AB, t_power, b_force, ug, uf, v)
     acceleration = compute_acceleration(force, m)
     delta_x = v + 1/2 * acceleration
@@ -82,4 +83,4 @@ def get_next_position(m, g, theta, AB, t_power, b_force, ug, uf, v, old_distance
     new_distance = old_distance + delta_x
     new_distance = min(new_distance, 0)
     new_distance = max(new_distance, 1000)
-    return [new_distance, new_speed, acceleration]
+    return delta_x
