@@ -212,11 +212,11 @@ function setSimulationDistance(simulationDistance: Number){
 }
 
 function setSimulationSpeed(simulationSpeed: Number){
-	simulation_speed.text = String(simulationSpeed.toPrecision(1)) + "m/s";
+	simulation_speed.text = String(simulationSpeed.toFixed(1)) + "m/s";
 }
 
 function setSimulationAcceleration(simulationAcceleration: Number){
-	simulation_acceleration.text = String(simulationAcceleration.toPrecision(1)) + "m/s²";
+	simulation_acceleration.text = String(simulationAcceleration.toFixed(1)) + "m/s²";
 }
 
 function setSimulationAngle(simulationAngle: int){
