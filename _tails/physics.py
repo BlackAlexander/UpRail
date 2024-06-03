@@ -40,11 +40,11 @@ def compute_force(m, g, theta, AB, t_power, b_force, ug, uf, v):
     result -= Gt  # gravitational pull
 
     if result > 0:  # friction acts in the opposite direction of moving
-        friction_force = Gn * uf
+        friction_force = Gn * uf / 100
     elif result == 0:
         friction_force = 0
     else:
-        friction_force = Gn * uf * (-1)
+        friction_force = Gn * uf / 100 * (-1)
 
     result -= friction_force
 

@@ -154,7 +154,7 @@ def fill_plan_data(file_content):
         friction_left = min(1000, max(int(node_line[1]), 0))
         friction_right = min(1000, max(int(node_line[2]), 0))
         for j in range(friction_left, friction_right + 1):
-            map_friction[j] = min(map_friction[j], friction_limit)
+            map_friction[j] = max(map_friction[j], friction_limit)
     plan_length = 0
     for i in range(len(nodes) - 1):
         xa = nodes[i][0]
@@ -310,4 +310,4 @@ def run_simulation(plan, unit):
     except FileNotFoundError:
         print("SIM_ERROR file not found")
 
-    run_input([100]*100, "print")
+    run_input([100]*1000, "print")
