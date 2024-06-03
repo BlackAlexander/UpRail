@@ -2,7 +2,7 @@ import time
 import threading
 
 from pingRespond import monitor_ping
-from commRespond import monitor_comm
+from commRespond import monitor_comm, restore_test_comm
 
 ping_thread = threading.Thread(target=monitor_ping)
 ping_thread.daemon = True
@@ -15,7 +15,8 @@ comm_thread.start()
 
 def main():
     print("Server running...")
-    time.sleep(50)
+    time.sleep(2)
+    restore_test_comm();
 
 
 if __name__ == "__main__":

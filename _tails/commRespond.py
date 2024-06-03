@@ -7,6 +7,12 @@ documents_path = os.path.join(os.path.expanduser('~'), 'Documents')
 comm_path = os.path.join(documents_path, 'upRail', 'COMM.uprail')
 
 
+def restore_test_comm():
+    content = "1\nsharp up down\nCFR"
+    with open(comm_path, 'w') as file:
+        file.write(content)
+    print('comm restored')
+
 def respond_to_comm():
     try:
         with open(comm_path, 'r') as file:
