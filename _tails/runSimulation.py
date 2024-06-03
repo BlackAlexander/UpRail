@@ -78,8 +78,10 @@ def compute_distance_TP(xA, yA, xB, yB):
 
 
 def walk_track_right(Dist, x_a, y_a):
-    right_x = map_right[x_a]
-    right_y = map_y[right_x]
+    if Dist < 0:
+        return walk_track_left(abs(Dist), x_a, y_a)
+    right_x = map_right[int(x_a)]
+    right_y = map_y[int(right_x)]
     left_distance = Dist
     while left_distance > 0:
         to_node = compute_distance_TP(x_a, y_a, right_x, right_y)
@@ -91,9 +93,27 @@ def walk_track_right(Dist, x_a, y_a):
             y_a = right_y
             right_x = map_right[x_a]
             right_y = map_y[right_x]
-            if x_a == 1000:
+            if right_x == 1000:
                 return [right_x, right_y]
+    return 0
 
+def walk_track_left(Dist, x_a, y_a):
+    left_x = map_left[int(x_a)]
+    left_y = map_y[int(left_x)]
+    left_distance = Dist
+    while left_distance > 0:
+        to_node = compute_distance_TP(x_a, y_a, left_x, left_y)
+        if left_distance <= to_node:
+            return compute_distance_projection(left_distance, x_a, y_a, left_x, left_y)
+        else:
+            left_distance -= to_node
+            x_a = left_x
+            y_a = left_y
+            left_x = map_left[x_a]
+            left_y = map_y[left_x]
+            if left_x == 0:
+                return [left_x, left_y]
+    return 0
 
 def fill_plan_data(file_content):
     global start_distance, plan_length, map_left, map_right, map_y, map_angle, map_is_node
@@ -192,27 +212,51 @@ def run_input(ABinput):
     :return: list of positions
     """
 
-    positions = [start_distance]
     last_position = start_distance
     last_speed = 0
 
+    positions = [last_position]
+
+    index = 0
+
     for AB in ABinput:
+        # Find precise angle
         theta = extrapolate_data(map_angle[int(last_position)], map_angle[int(last_position) + 1], (last_position % 1) * 1000)
-        delta_x = get_next_position(unit_mass, gravity, theta, AB, unit_power*1000, unit_brake, map_grip[int(last_position)], map_friction[int(last_position)], last_speed, last_position)
-        new_position = last_position + delta_x
+
+        # Run physics
+        run = get_next_position(unit_mass, gravity, theta, AB, unit_power*1000, unit_brake, map_grip[int(last_position)], map_friction[int(last_position)], last_speed, last_position)
+
+        # Extract data
+        delta_x = run[0]
+        acceleration = run[1]
+        position_y = extrapolate_data(map_y[int(last_position)], map_y[int(last_position) + 1], (last_position % 1) * 1000)
+        new_position = walk_track_right(delta_x, last_position, position_y)[0]
+        # new_position = last_position + delta_x
         new_speed = delta_x
+
+        # Finish successfully
         if new_position >= 1000:
-            return positions  # finished successfully
+            return positions
+
+        # Too slow
+        if len(positions) > low_efficiency_timer and new_position < (low_efficiency_timer * low_efficiency_obstruction):
+            return positions
+
+        # Can't run outside map
         if new_position <= start_distance:
             new_position = last_position
             new_speed = last_speed
+
+        # Prepare for next run
         positions.append(new_position)
         last_position = new_position
         last_speed = new_speed
-        if len(positions) > low_efficiency_timer and new_position < (low_efficiency_timer * low_efficiency_obstruction):
-            return positions  # too slow
+
+        print(index, round(last_position, 2), round(delta_x, 2), round(acceleration, 2))
+        index += 1
 
     return positions
+
 
 def run_simulation(plan, unit):
     plan_path = os.path.join(documents_path, 'upRail/plans', plan + '.upmap')
@@ -241,4 +285,4 @@ def run_simulation(plan, unit):
     except FileNotFoundError:
         print("SIM_ERROR file not found")
 
-    print(run_input([100]*100))
+    run_input([100]*100)
