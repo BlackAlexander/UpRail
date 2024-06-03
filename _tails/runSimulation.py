@@ -91,11 +91,12 @@ def walk_track_right(Dist, x_a, y_a):
             left_distance -= to_node
             x_a = right_x
             y_a = right_y
+            if x_a >= 1000:
+                return [x_a, y_a]
             right_x = map_right[x_a]
             right_y = map_y[right_x]
-            if right_x == 1000:
-                return [right_x, right_y]
     return 0
+
 
 def walk_track_left(Dist, x_a, y_a):
     left_x = map_left[int(x_a)]
@@ -109,11 +110,12 @@ def walk_track_left(Dist, x_a, y_a):
             left_distance -= to_node
             x_a = left_x
             y_a = left_y
+            if x_a <= 0:
+                return [x_a, y_a]
             left_x = map_left[x_a]
             left_y = map_y[left_x]
-            if left_x == 0:
-                return [left_x, left_y]
     return 0
+
 
 def fill_plan_data(file_content):
     global start_distance, plan_length, map_left, map_right, map_y, map_angle, map_is_node
@@ -164,10 +166,10 @@ def fill_plan_data(file_content):
 
     map_y[0] = nodes[0][1]
     map_left[0] = -1
-    map_right[0] = 1
+    map_right[0] = nodes[1][0]
     map_angle[0] = 0
     map_y[1000] = nodes[len(nodes) - 1][1]
-    map_left[1000] = len(nodes) - 2
+    map_left[1000] = nodes[len(nodes) - 2][0]
     map_right[1000] = 1001
     map_angle[1000] = 0
 
@@ -197,7 +199,7 @@ def fill_plan_data(file_content):
         ry = map_y[rx]
         map_angle[i] = math.atan2((ry-ly), (rx-lx))
 
-    start_distance = walk_track_right(unit_length, nodes[0][0], nodes[0][1])[0] + 1  # +1 to correct for any errors
+    start_distance = walk_track_right(unit_length, nodes[0][0], nodes[0][1])[0]
 
 
 def extrapolate_data(left_value, right_value, ms):
@@ -206,7 +208,16 @@ def extrapolate_data(left_value, right_value, ms):
     return result
 
 
-def run_input(ABinput):
+def output(simdata):
+    sim_path = os.path.join(documents_path, 'upRail', 'SIM.uprail')
+    with open(sim_path, 'w') as file:
+        file.write(str(len(simdata)) + '\n')
+        for i in range(len(simdata)):
+            file.write(' '.join(map(str, simdata[i])))
+            file.write('\n')
+
+
+def run_input(ABinput, case):
     """
     :param ABinput: array with values from -100 (brake) to 100 (accelerate)
     :return: list of positions
@@ -217,26 +228,37 @@ def run_input(ABinput):
 
     positions = [last_position]
 
+    simdata = []
+
     index = 0
 
     for AB in ABinput:
+        position_y = extrapolate_data(map_y[int(last_position)], map_y[int(last_position) + 1], (last_position % 1) * 1000)
+        current_wc = walk_track_left(weight_center, last_position, position_y)[0]
+
         # Find precise angle
-        theta = extrapolate_data(map_angle[int(last_position)], map_angle[int(last_position) + 1], (last_position % 1) * 1000)
+        theta = extrapolate_data(map_angle[int(current_wc)], map_angle[int(current_wc) + 1], (current_wc % 1) * 1000)
 
         # Run physics
-        run = get_next_position(unit_mass, gravity, theta, AB, unit_power*1000, unit_brake, map_grip[int(last_position)], map_friction[int(last_position)], last_speed, last_position)
+        run = get_next_position(unit_mass, gravity, theta, AB, unit_power*1000, unit_brake, map_grip[int(current_wc)], map_friction[int(current_wc)], last_speed, last_position)
 
         # Extract data
         delta_x = run[0]
         acceleration = run[1]
-        position_y = extrapolate_data(map_y[int(last_position)], map_y[int(last_position) + 1], (last_position % 1) * 1000)
         new_position = walk_track_right(delta_x, last_position, position_y)[0]
         # new_position = last_position + delta_x
         new_speed = delta_x
 
         # Finish successfully
         if new_position >= 1000:
-            return positions
+            new_position = 1000
+            positions.append(new_position)
+            simdata.append([index, round(new_position, 2), AB, round(acceleration, 2), round(delta_x, 2)])
+            if case == "fitness":
+                return positions
+            elif case == "print":
+                output(simdata)
+                return
 
         # Too slow
         if len(positions) > low_efficiency_timer and new_position < (low_efficiency_timer * low_efficiency_obstruction):
@@ -252,10 +274,13 @@ def run_input(ABinput):
         last_position = new_position
         last_speed = new_speed
 
-        print(index, round(last_position, 2), round(delta_x, 2), round(acceleration, 2))
+        simdata.append([index, round(last_position, 2), AB, round(acceleration, 2), round(delta_x, 2)])
         index += 1
 
-    return positions
+    if case == "fitness":
+        return positions
+    elif case == "print":
+        output(simdata)
 
 
 def run_simulation(plan, unit):
@@ -285,4 +310,4 @@ def run_simulation(plan, unit):
     except FileNotFoundError:
         print("SIM_ERROR file not found")
 
-    run_input([100]*100)
+    run_input([100]*100, "print")
