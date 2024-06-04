@@ -21,4 +21,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # os.startfile("C:\\Users\\flanco\\Desktop\\upRail\\upRail.exe")
     main()
