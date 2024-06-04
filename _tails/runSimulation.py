@@ -306,6 +306,7 @@ def run_input(ABinput, case):
 
 
 def run_simulation(plan, unit):
+    print("Running " + unit + " on " + plan)
     plan_path = os.path.join(documents_path, 'upRail/plans', plan + '.upmap')
     unit_path = os.path.join(documents_path, 'upRail/units', unit + '.uptrain')
     env_path = os.path.join(documents_path, 'upRail', 'Environment.uprail')

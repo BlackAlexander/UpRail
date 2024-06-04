@@ -18,7 +18,6 @@ def respond_to_comm():
     try:
         with open(comm_path, 'r') as file:
             content = file.read()
-
         content = content.split('\n')
         first_line = content[0]
         if first_line == '1':

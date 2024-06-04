@@ -17,11 +17,11 @@
 	</name>
 -->
 <application xmlns="http://ns.adobe.com/air/application/33.1">
-  <id>Interface</id>
+  <id>upRail</id>
   <versionNumber>1.0</versionNumber>
-  <filename>Interface</filename>
+  <filename>upRail</filename>
   <description/>
-  <name>Interface</name>
+  <name>upRail</name>
   <copyright/>
   <initialWindow>
     <content>Interface.swf</content>
