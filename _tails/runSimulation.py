@@ -217,6 +217,21 @@ def output(simdata):
             file.write('\n')
 
 
+def answer_sim_request(success):
+    comm_path = os.path.join(documents_path, 'upRail', 'COMM.uprail')
+    try:
+        with open(comm_path, 'w') as file:
+            if success:
+                file.write("3\ndone")
+            else:
+                file.write("4\nfail")
+
+    except FileNotFoundError:
+        print("COMM_ERROR file_not_found")
+
+
+
+
 def run_input(ABinput, case):
     """
     :param ABinput: array with values from -100 (brake) to 100 (accelerate)
@@ -258,11 +273,17 @@ def run_input(ABinput, case):
                 return positions
             elif case == "print":
                 output(simdata)
+                answer_sim_request(True)
                 return
 
         # Too slow
         if len(positions) > low_efficiency_timer and new_position < (low_efficiency_timer * low_efficiency_obstruction):
-            return positions
+            if case == "fitness":
+                return positions
+            elif case == "print":
+                output(simdata)
+                answer_sim_request(False)
+                return
 
         # Can't run outside map
         if new_position <= start_distance:
@@ -281,6 +302,7 @@ def run_input(ABinput, case):
         return positions
     elif case == "print":
         output(simdata)
+        answer_sim_request(True)
 
 
 def run_simulation(plan, unit):

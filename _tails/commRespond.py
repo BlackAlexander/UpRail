@@ -8,7 +8,7 @@ comm_path = os.path.join(documents_path, 'upRail', 'COMM.uprail')
 
 
 def restore_test_comm():
-    content = "1\ncalea turzii\nbolt scooter with passenger"
+    content = "1\nbasic\nCFR"
     with open(comm_path, 'w') as file:
         file.write(content)
     print('comm restored')
@@ -24,11 +24,11 @@ def respond_to_comm():
         if first_line == '1':
             plan = content[1]
             unit = content[2]
-            if len(plan) > 0 and len(unit) > 0:
-                run_simulation(plan, unit)
             content = "2\nloading"
             with open(comm_path, 'w') as file:
                 file.write(content)
+            if len(plan) > 0 and len(unit) > 0:
+                run_simulation(plan, unit)
         else:
             pass
 
