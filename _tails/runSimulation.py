@@ -332,4 +332,10 @@ def run_simulation(plan, unit):
     except FileNotFoundError:
         print("SIM_ERROR file not found")
 
+    #  No speed restrictions means full acceleration is optimal solution
+    for i in range(0, 999):
+        if map_speed_max == 9999:
+            run_input([100] * 10000, "print")
+            return
+
     run_input([100]*1000, "print")

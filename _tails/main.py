@@ -15,7 +15,7 @@ comm_thread.start()
 
 def main():
     print("Server running...")
-    time.sleep(2)
+    time.sleep(3600)
     # restore_test_comm()
 
 
