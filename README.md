@@ -9,21 +9,21 @@ With the power of 3000+ lines of hand-written code in AIR and Python, real life 
 
 ## Working with **upRail**
 
-<img src = "Graphic Design/presentation/Title.gif" width=50%>
+<img src = "Graphic Design/presentation/Title.gif" width=75%>
 
 You can create, store and manage up to 12 custom-made plans and units. You'll get specific data for each of them, as well as being able to set different restrictions.
 
 
 #### design a plan
-<img src = "Graphic Design/presentation/Plans.gif" width=50%>
+<img src = "Graphic Design/presentation/Plans.gif" width=75%>
 
 #### design a unit
-<img src = "Graphic Design/presentation/Units.gif" width=50%>
+<img src = "Graphic Design/presentation/Units.gif" width=75%>
 
 Finally, you can run the simulation with any of your components, as long as they are compatible (there are no contradictions in their restrictions).
 
 #### live simulation
-<img src = "Graphic Design/presentation/Sim.gif" width=50%>
+<img src = "Graphic Design/presentation/Sim.gif" width=75%>
 
 
 
