@@ -358,7 +358,7 @@ def run_input(ABinput):
 
     positions = [last_position]  # remove from this function
 
-    speed_respect = []  # how well the speed was respected, from 10 to 100
+    speed_respect = [0]  # how well the speed was respected, from 10 to 100
 
     index = 0
 
@@ -381,37 +381,29 @@ def run_input(ABinput):
 
         # punish failing speed restrictions
         if new_speed <= 0:
-            speed_respect.append(0)
+            speed_respect.append(1)
         else:
-            if new_speed > map_speed_max[int(last_position)]:
-                factor = new_speed/map_speed_max[int(last_position)]
-                if factor >= 2:
-                    fitness_factor = 10
+            if map_speed_max[int(last_position)] < 9999:
+                if new_speed > map_speed_max[int(last_position)]:
+                    speed_respect.append(1)
                 else:
-                    fitness_factor = min((2-factor)*90 + 10, 100)
-                    fitness_factor = max(fitness_factor, 10)
-                    fitness_factor = int(fitness_factor)
-                speed_respect.append(fitness_factor)
-            elif new_speed < map_speed_min[int(last_position)]:
-                factor = new_speed/map_speed_min[int(last_position)]
-                fitness_factor = factor * 100
-                fitness_factor = max(fitness_factor, 100)
-                fitness_factor = min(fitness_factor, 0)
-                fitness_factor = int(fitness_factor)
-                speed_respect.append(fitness_factor)
-            else:
-                speed_respect.append(100)
+                    speed_respect.append(1000)
+            elif map_speed_min[int(last_position)] > 0:
+                if new_speed < map_speed_min[int(last_position)]:
+                    speed_respect.append(1)
+                else:
+                    speed_respect.append(1000)
 
         # Finish successfully
         if new_position >= 1000:
             new_position = 1000
             positions.append(new_position)
-            speed_fitness = int(sum(speed_respect)/len(speed_respect))
+            speed_fitness = sum(speed_respect)/len(speed_respect)
             return [1, speed_fitness]
 
         # Too slow
         if index > low_efficiency_timer and total_distance < (low_efficiency_timer * low_efficiency_obstruction):
-            speed_fitness = int(sum(speed_respect)/len(speed_respect))
+            speed_fitness = sum(speed_respect)/len(speed_respect)
             return [0, speed_fitness]
 
         # Can't run outside map
@@ -426,7 +418,7 @@ def run_input(ABinput):
 
         index += 1
 
-    speed_fitness = int(sum(speed_respect) / len(speed_respect))
+    speed_fitness = sum(speed_respect) / len(speed_respect)
     return [2, speed_fitness]
 
 

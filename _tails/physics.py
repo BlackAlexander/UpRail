@@ -23,7 +23,10 @@ def compute_force(m, g, theta, AB, t_power, b_force, ug, uf, v):
 
     max_tractive = ug/100 * m * g * math.cos(theta)  # adhesion limit
     v = max(v, 0.00001)  # don't divide by 0
-    tractive_force = min(tractive_input / v, max_tractive)
+    if AB > 0:
+        tractive_force = min(tractive_input / v, max_tractive)
+    else:
+        tractive_force = tractive_input
 
     Gt = m * g * math.sin(theta)  # tangential weight
     Gn = m * g * math.cos(theta)  # normal weight
@@ -80,6 +83,9 @@ def get_next_position(m, g, theta, AB, t_power, b_force, ug, uf, v, old_distance
     acceleration = compute_acceleration(force, m)
     delta_x = v + 1/2 * acceleration
     new_speed = delta_x
+    if AB <= 0 and v < 0:
+        delta_x = 0
+        acceleration = 0
     new_distance = old_distance + delta_x
     new_distance = min(new_distance, 0)
     new_distance = max(new_distance, 1000)
