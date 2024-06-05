@@ -20,6 +20,11 @@ var simCarHeight: Number = 10;
 
 var auxiliaryData: Array = new Array();
 
+var simMapUT: Array = new Array();
+var simMapUF: Array = new Array();
+var simMapMaxSpeed: Array = new Array();
+var simMapMinSpeed: Array = new Array();
+
 var currentSimulationState = "start";
 // start
 // during
@@ -48,7 +53,7 @@ function simulation_proceed(event: MouseEvent){
 		currentSimulationState = "end";
 	} else if (currentSimulationState == "end"){
 		stopSimulation();
-		gotoAndStop(12);
+		gotoAndStop(1);  // change to 12 when making results page
 	}
 }
 
@@ -122,6 +127,30 @@ function readSimulationData(){
 		var simAcceleration = Number(simLine[3]);
 		var simSpeed = Number(simLine[4]);
 		simulationData.push([simPosition, simAB, simAcceleration, simSpeed]);
+	}
+}
+
+function readSimulationMap(){
+	try {
+		var newFile:File = File.documentsDirectory.resolvePath("upRail/MAP.uprail");
+		var fileStream:FileStream = new FileStream();
+		fileStream.open(newFile, FileMode.READ);
+		var fileContent:String = fileStream.readUTFBytes(fileStream.bytesAvailable);
+		fileStream.close();
+	} catch (error:Error){
+		trace("Could not read file: " + error.message);
+		return;
+	}
+	var fileLines: Array = fileContent.split(/\n/);
+	var linesUT = fileLines[0].split(' ');
+	var linesUF = fileLines[1].split(' ');
+	var linesMaxSpeed = fileLines[2].split(' ');
+	var linesMinSpeed = fileLines[3].split(' ');
+	for (var i: int = 0; i <= 1000; i++){
+		simMapUT.push(linesUT[i]);
+		simMapUF.push(linesUF[i]);
+		simMapMaxSpeed.push(linesMaxSpeed[i]);
+		simMapMinSpeed.push(linesMinSpeed[i]);
 	}
 }
 
@@ -199,6 +228,19 @@ function setAcceleration(acceleration: int){
 }
 simulation_force.gotoAndStop(101);
 
+function setTimeSim(minutes: int, seconds: int){
+	minutes = minutes % 100;
+	var min_string: String = String(minutes);
+	var sec_string: String = String(seconds);
+	if (minutes < 10){
+		min_string = "0" + min_string;
+	}
+	if (seconds < 10){
+		sec_string = "0" + sec_string;
+	}
+	simulation_time_elapsed.text = min_string + ":" + sec_string; 
+}
+
 function setProgress(progress: int){
 	if (progress == 0) {
 		progress = 1;
@@ -222,6 +264,17 @@ function setSimulationAcceleration(simulationAcceleration: Number){
 function setSimulationAngle(simulationAngle: int){
 	simulation_angle.text = String(simulationAngle) + "°";
 }
+
+function setSimulationMap(ut: int, uf: int, maxspeed:int, minspeed: int){
+	sim_field_traction.text = String(ut);
+	sim_field_friction.text = String(uf);
+	sim_field_min_speed.text = String(minspeed);
+	sim_field_max_speed.text = String(maxspeed);
+	if (maxspeed == 9999){
+		sim_field_max_speed.text = "∞";
+	}
+}
+setSimulationMap(0, 0, 9999, 0);
 
 function computeAuxiliaryData(){
 	// [isNode, y, leftNode[i,x,y], rightNode[i,x,y], angle]
@@ -370,21 +423,39 @@ function executeKey(){
 	var simKAcceleration: Number;
 	var simKAngle: int;
 	var simKProgress: int;
+	var simKSeconds: int;
+	var simKMinutes: int;
+	var simKUt: int;
+	var simKUf: int;
+	var simKMaxSpeed: int;
+	var simKMinSpeed: int;
+	simKSeconds = timems / 1000;
+	simKMinutes = simKSeconds / 60;
+	simKSeconds = simKSeconds % 60;
 	
 	simKDistance = extrapolateData(keyLine[0], keyLineN[0], timems);
 	simKAB = int(extrapolateData(keyLine[1], keyLineN[1], timems)); 
 	simKAcceleration = extrapolateData(keyLine[2], keyLineN[2], timems); 
 	simKSpeed = extrapolateData(keyLine[3], keyLineN[3], timems);
-	simKProgress = int((timeS / simulationData.length)*100);
+	simKProgress = int(Math.ceil((timeS / simulationData.length)*100));
+	simKUt = simMapUT[int(keyLine[0])];
+	simKUf = simMapUF[int(keyLine[0])];
+	simKMaxSpeed = simMapMaxSpeed[int(keyLine[0])];
+	simKMinSpeed = simMapMinSpeed[int(keyLine[0])];
+	
 	setAcceleration(simKAB);
 	setSimulationDistance(simKDistance);
 	setSimulationSpeed(simKSpeed);
 	setSimulationAcceleration(simKAcceleration);
 	setProgress(simKProgress);
+	setTimeSim(simKMinutes, simKSeconds);
+
 	var simKAngleL: Number = auxiliaryData[int(keyLine[0])][4] * (180 / Math.PI);
 	var simKAngleR: Number = auxiliaryData[int(keyLineN[0])][4] * (180 / Math.PI);
 	simKAngle = int(extrapolateData(simKAngleL, simKAngleR, timems));
 	setSimulationAngle(simKAngle);
+	
+	setSimulationMap(simKUt, simKUf, simKMaxSpeed, simKMinSpeed);
 
 	paintSimulationUnit(simKDistance);
 }
@@ -392,6 +463,7 @@ function executeKey(){
 readSimulationUnit();
 readSimulationPlan();
 readSimulationData();
+readSimulationMap();
 computeAuxiliaryData();
 paintSimulationPlan();
 paintSimulationUnit(simulationData[0][0]);

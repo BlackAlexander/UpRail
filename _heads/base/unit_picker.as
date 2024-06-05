@@ -5,9 +5,11 @@ import flash.filesystem.FileStream;
 
 stop();
 
+ping7.gotoAndStop(2);
+
 units_crud_back_btn.addEventListener(MouseEvent.CLICK, return_to_title);
 
-var chosenTrain = "CFR BWABA";
+var chosenTrain = "0";
 var trainCount: int = 0;
 units_files_count.text = String(trainCount) + "/12";
 var allUnits: Array = new Array();
@@ -45,7 +47,7 @@ function go_to_new_unit(event: MouseEvent){
 
 function clearTheUnitList(){
 	for (var i: int = 0; i < allMCsUnits.length; i++){
-		units_holder.removeChild(allMCs[i]);
+		units_holder.removeChild(allMCsUnits[i]);
 	}
 	allMCsUnits = [];
 }

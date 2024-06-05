@@ -5,7 +5,12 @@ import flash.filesystem.FileStream;
 
 stop();
 
-plans_create_back_btn.addEventListener(MouseEvent.CLICK, return_to_title);
+ping6.gotoAndStop(2);
+
+plans_create_back_btn.addEventListener(MouseEvent.CLICK, return_to_plan_selector);
+function return_to_plan_selector(event: MouseEvent){
+	gotoAndStop(5);
+}
 
 new_node_coordinates.visible = false;
 var plan_mass_limit: int = 0;
@@ -718,16 +723,15 @@ function readMapFile(){
 	plan_mass_limit = int(fileLines[1].slice(6));
 	var readNodesCount: int = 0;
 	readNodesCount = int(fileLines[2].slice(7));
+	speedRestrictions = [];
+	gripRestrictions = [];
+	impedimentRestrictions = [];
 	for (var nodeIndexCount: int = 0; nodeIndexCount < readNodesCount; nodeIndexCount++){
 		var nodeLine: Array = fileLines[3 + nodeIndexCount].split(' ');
 		var readNodeX = int(nodeLine[0]);
 		var readNodeY = int(nodeLine[1]);
 		quick_add(readNodeX, readNodeY);
 	}
-
-	speedRestrictions = [];
-	gripRestrictions = [];
-	impedimentRestrictions = [];
 	var speedLimitsCount = int(fileLines[readNodesCount + 3].slice(7));
 	for (var speedIndexCount: int = 0; speedIndexCount < speedLimitsCount; speedIndexCount++){
 		var nodeLineS: Array = fileLines[4 + readNodesCount + speedIndexCount].split(' ');

@@ -5,6 +5,8 @@ import flash.filesystem.FileStream;
 
 stop();
 
+ping5.gotoAndStop(2);
+
 plans_crud_back_btn.addEventListener(MouseEvent.CLICK, return_to_title);
 
 var chosenMap: String = "0";

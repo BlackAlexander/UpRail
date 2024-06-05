@@ -5,6 +5,8 @@ import flash.filesystem.FileStream;
 
 stop();
 
+ping9.gotoAndStop(2);
+
 select_back_btn.addEventListener(MouseEvent.CLICK, return_to_title);
 selection_front_btn.visible = false;
 

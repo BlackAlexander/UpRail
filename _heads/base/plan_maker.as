@@ -38,6 +38,9 @@ function add_node(nodeX: int, nodeY: int){
 }
 
 function remove_node(nodeX: int): void {
+	if (nodeX <= 0 || nodeX >= 1000){
+		return;
+	}
     var low: int = 0;
     var high: int = track.length - 1;
     var mid: int;

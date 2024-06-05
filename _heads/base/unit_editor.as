@@ -2,6 +2,8 @@ import flash.events.MouseEvent;
 
 stop();
 
+ping8.gotoAndStop(2);
+
 units_create_back_btn.addEventListener(MouseEvent.CLICK, return_to_unit_selector);
 function return_to_unit_selector(event: MouseEvent){
 	gotoAndStop(7);

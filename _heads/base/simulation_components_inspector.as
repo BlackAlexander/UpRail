@@ -1,5 +1,7 @@
 stop();
 
+ping10.gotoAndStop(2);
+
 if (selectedUnit == "0" || selectedPlan == "0"){
 	gotoAndStop(9);
 }
@@ -12,9 +14,17 @@ function return_to_component_selector(event: MouseEvent){
 inspection_front_btn.visible = false;
 inspection_btn_text.visible = false;
 
+loadingSimScreen.visible = false;
+loadingSimScreen.gotoAndStop(1);
 inspection_front_btn.addEventListener(MouseEvent.CLICK, inspection_proceed);
 function inspection_proceed(event: MouseEvent){
-	gotoAndStop(10);
+	printSimulationData()
+	loadingSimScreen.visible = true;
+	loadingSimScreen.gotoAndPlay(2);
+}
+
+function goToSimulation(){
+	gotoAndStop(11);
 }
 
 inspection_status.text = "Loading...";
@@ -348,3 +358,24 @@ function runInspection(){
 }
 
 runInspection();
+
+function printSimulationData(){
+	var fileText: String = "1\n";
+	fileText += String(selectedPlan) + "\n";
+	fileText += String(selectedUnit);
+
+	var currentDir:File = File.documentsDirectory.resolvePath("upRail");
+	if (!currentDir.exists) {
+		currentDir.createDirectory();
+	}
+
+	var file:File = currentDir.resolvePath("COMM.uprail");
+	var fileStream:FileStream = new FileStream();
+	try {
+		fileStream.open(file, FileMode.WRITE);
+		fileStream.writeUTFBytes(fileText);
+		fileStream.close();
+	} catch (error:Error) {
+		showUnitInputError("Could not save COMM file: " + error.message);
+	}
+}
