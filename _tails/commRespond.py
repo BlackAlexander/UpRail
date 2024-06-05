@@ -1,14 +1,14 @@
 import os
 import time
 
-from runSimulation import run_simulation
+from genetic import run_genetic
 
 documents_path = os.path.join(os.path.expanduser('~'), 'Documents')
 comm_path = os.path.join(documents_path, 'upRail', 'COMM.uprail')
 
 
 def restore_test_comm():
-    content = "1\ntwenty up\nCFR"
+    content = "1\nrestricted\nCFR"
     with open(comm_path, 'w') as file:
         file.write(content)
     print('comm restored')
@@ -27,7 +27,7 @@ def respond_to_comm():
             with open(comm_path, 'w') as file:
                 file.write(content)
             if len(plan) > 0 and len(unit) > 0:
-                run_simulation(plan, unit)
+                run_genetic(plan, unit)
         else:
             pass
 

@@ -9,6 +9,7 @@ gravity = 9.8
 low_efficiency_obstruction: 1
 low_efficiency_timer: 1000
 
+
 unit_mass = 0
 unit_power = 0
 unit_brake = 0
@@ -272,15 +273,22 @@ def answer_sim_request(success):
         print("COMM_ERROR file_not_found")
 
 
-def run_input(ABinput, case):
+def test_full_banana():
+    for restriction in map_speed_max:
+        if restriction != 9999:
+            return False
+    return True
+
+
+def print_gene(ABinput):
     """
     :param ABinput: array with values from -100 (brake) to 100 (accelerate)
-    :param case: "print" or "fitness", if to print a good input, or just evaluate its fitness in the genetic algorithm
-    :return: list of positions
+    :return: None
     """
 
     last_position = start_distance
     last_speed = 0
+    total_distance = 0
 
     positions = [last_position]
 
@@ -302,6 +310,7 @@ def run_input(ABinput, case):
         delta_x = run[0]
         acceleration = run[1]
         new_position = walk_track_right(delta_x, last_position, position_y)[0]
+        total_distance += delta_x
         # new_position = last_position + delta_x
         new_speed = delta_x
 
@@ -310,21 +319,15 @@ def run_input(ABinput, case):
             new_position = 1000
             positions.append(new_position)
             simdata.append([index, round(new_position, 2), AB, round(acceleration, 2), round(delta_x, 2)])
-            if case == "fitness":
-                return positions
-            elif case == "print":
-                output(simdata)
-                answer_sim_request(True)
-                return
+            output(simdata)
+            answer_sim_request(True)
+            return
 
         # Too slow
-        if len(positions) > low_efficiency_timer and new_position < (low_efficiency_timer * low_efficiency_obstruction):
-            if case == "fitness":
-                return positions
-            elif case == "print":
-                output(simdata)
-                answer_sim_request(False)
-                return
+        if len(positions) > low_efficiency_timer and total_distance < (low_efficiency_timer * low_efficiency_obstruction):
+            output(simdata)
+            answer_sim_request(False)
+            return
 
         # Can't run outside map
         if new_position <= start_distance:
@@ -339,11 +342,92 @@ def run_input(ABinput, case):
         simdata.append([index, round(last_position, 2), AB, round(acceleration, 2), round(delta_x, 2)])
         index += 1
 
-    if case == "fitness":
-        return positions
-    elif case == "print":
-        output(simdata)
-        answer_sim_request(True)
+    output(simdata)
+    answer_sim_request(True)
+
+
+def run_input(ABinput):
+    """
+    :param ABinput: array with values from -100 (brake) to 100 (accelerate)
+    :return: fitness of AB
+    """
+
+    last_position = start_distance
+    last_speed = 0
+    total_distance = 0
+
+    positions = [last_position]  # remove from this function
+
+    speed_respect = []  # how well the speed was respected, from 10 to 100
+
+    index = 0
+
+    for AB in ABinput:
+        position_y = extrapolate_data(map_y[int(last_position)], map_y[int(last_position) + 1], (last_position % 1) * 1000)
+        current_wc = walk_track_left(weight_center, last_position, position_y)[0]
+
+        # Find precise angle
+        theta = extrapolate_data(map_angle[int(current_wc)], map_angle[int(current_wc) + 1], (current_wc % 1) * 1000)
+
+        # Run physics
+        run = get_next_position(unit_mass, gravity, theta, AB, unit_power*1000, unit_brake, map_grip[int(current_wc)], map_friction[int(current_wc)], last_speed, last_position)
+
+        # Extract data
+        delta_x = run[0]
+        new_position = walk_track_right(delta_x, last_position, position_y)[0]
+        total_distance += delta_x
+        # new_position = last_position + delta_x
+        new_speed = delta_x
+
+        # punish failing speed restrictions
+        if new_speed <= 0:
+            speed_respect.append(0)
+        else:
+            if new_speed > map_speed_max[int(last_position)]:
+                factor = new_speed/map_speed_max[int(last_position)]
+                if factor >= 2:
+                    fitness_factor = 10
+                else:
+                    fitness_factor = min((2-factor)*90 + 10, 100)
+                    fitness_factor = max(fitness_factor, 10)
+                    fitness_factor = int(fitness_factor)
+                speed_respect.append(fitness_factor)
+            elif new_speed < map_speed_min[int(last_position)]:
+                factor = new_speed/map_speed_min[int(last_position)]
+                fitness_factor = factor * 100
+                fitness_factor = max(fitness_factor, 100)
+                fitness_factor = min(fitness_factor, 0)
+                fitness_factor = int(fitness_factor)
+                speed_respect.append(fitness_factor)
+            else:
+                speed_respect.append(100)
+
+        # Finish successfully
+        if new_position >= 1000:
+            new_position = 1000
+            positions.append(new_position)
+            speed_fitness = int(sum(speed_respect)/len(speed_respect))
+            return [1, speed_fitness]
+
+        # Too slow
+        if index > low_efficiency_timer and total_distance < (low_efficiency_timer * low_efficiency_obstruction):
+            speed_fitness = int(sum(speed_respect)/len(speed_respect))
+            return [0, speed_fitness]
+
+        # Can't run outside map
+        if new_position <= start_distance:
+            new_position = last_position
+            new_speed = last_speed
+
+        # Prepare for next run
+        positions.append(new_position)
+        last_position = new_position
+        last_speed = new_speed
+
+        index += 1
+
+    speed_fitness = int(sum(speed_respect) / len(speed_respect))
+    return [2, speed_fitness]
 
 
 def run_simulation(plan, unit):
@@ -376,11 +460,3 @@ def run_simulation(plan, unit):
         print("SIM_ERROR file not found")
 
     print_maps()
-
-    #  No speed restrictions means full acceleration is optimal solution
-    for i in range(0, 999):
-        if map_speed_max == 9999:
-            run_input([100] * 10000, "print")
-            return
-
-    run_input([100]*1000, "print")

@@ -16,8 +16,8 @@ comm_thread.start()
 
 def main():
     print("Server running...")
-    time.sleep(3600)
-    # restore_test_comm()
+    time.sleep(2000)
+    restore_test_comm()
 
 
 if __name__ == "__main__":
