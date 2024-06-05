@@ -1,0 +1,13 @@
+Screen with operations for units.
+
+|----------------------------------------------------------------------|
+
+Max cars: 24
+
+Car length: 20m
+Car length with spacing: 22m
+
+-> Button to add car
+    -> Choose engine or load
+-> Button to remove car
+-> Button to edit existing car

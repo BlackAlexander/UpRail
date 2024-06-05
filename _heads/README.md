@@ -1,0 +1,1 @@
+Short note: Most people can't access a .fla file, since Adobe Animate requires a paid subscription. Some of the code is available in the "base/" directory. It includes the source code for most of the main frames, but there are various other function spread throughout the application.

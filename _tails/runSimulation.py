@@ -33,6 +33,33 @@ nodes = []
 cars = []
 
 
+def set_zero_values():
+    global unit_mass, unit_power, unit_brake, unit_length, weight_center
+    global start_distance, plan_length
+    global map_left, map_right, map_y, map_angle, map_is_node
+    global map_speed_max, map_speed_min, map_grip, map_friction
+    global nodes, cars
+
+    unit_mass = 0
+    unit_power = 0
+    unit_brake = 0
+    unit_length = 0
+    weight_center = 0
+    start_distance = 0
+    plan_length = 0
+    map_left = [0] * 1001
+    map_right = [1000] * 1001
+    map_y = [0.0] * 1001
+    map_angle = [0.0] * 1001
+    map_is_node = [False] * 1001
+    map_speed_max = [9999] * 1001
+    map_speed_min = [0] * 1001
+    map_grip = [100] * 1001
+    map_friction = [0] * 1001
+    nodes = []
+    cars = []
+
+
 def compute_weight_center(cars_array):
     if unit_mass == 0:
         return len(cars_array) * 22 / 2
@@ -42,6 +69,21 @@ def compute_weight_center(cars_array):
         current_car_moment = current_car_center * cars_array[i][0]
         moment_sum += current_car_moment
     return moment_sum / unit_mass
+
+
+def print_maps():
+    map_path = os.path.join(documents_path, 'upRail', 'MAP.uprail')
+    content = ""
+    content += ' '.join(map(str, map_grip))
+    content += '\n'
+    content += ' '.join(map(str, map_friction))
+    content += '\n'
+    content += ' '.join(map(str, map_speed_max))
+    content += '\n'
+    content += ' '.join(map(str, map_speed_min))
+    content += '\n'
+    with open(map_path, 'w') as file:
+        file.write(content)
 
 
 def fill_unit_data(file_content):
@@ -95,7 +137,7 @@ def walk_track_right(Dist, x_a, y_a):
                 return [x_a, y_a]
             right_x = map_right[x_a]
             right_y = map_y[right_x]
-    return 0
+    return [0, map_y[0]]
 
 
 def walk_track_left(Dist, x_a, y_a):
@@ -114,7 +156,7 @@ def walk_track_left(Dist, x_a, y_a):
                 return [x_a, y_a]
             left_x = map_left[x_a]
             left_y = map_y[left_x]
-    return 0
+    return [0, map_y[0]]
 
 
 def fill_plan_data(file_content):
@@ -140,7 +182,7 @@ def fill_plan_data(file_content):
             if speed_type == "max":
                 map_speed_max[j] = min(map_speed_max[j], speed_limit)
             elif speed_type == "min":
-                map_speed_min[j] = max(map_speed_max[j], speed_limit)
+                map_speed_min[j] = max(map_speed_min[j], speed_limit)
     for i in range(grip_count):
         node_line = file_content[5 + nodes_count + speed_count + i].split(' ')
         grip_limit = min(100, max(int(node_line[0]), 0))
@@ -230,11 +272,10 @@ def answer_sim_request(success):
         print("COMM_ERROR file_not_found")
 
 
-
-
 def run_input(ABinput, case):
     """
     :param ABinput: array with values from -100 (brake) to 100 (accelerate)
+    :param case: "print" or "fitness", if to print a good input, or just evaluate its fitness in the genetic algorithm
     :return: list of positions
     """
 
@@ -307,6 +348,7 @@ def run_input(ABinput, case):
 
 def run_simulation(plan, unit):
     print("Running " + unit + " on " + plan)
+    set_zero_values()
     plan_path = os.path.join(documents_path, 'upRail/plans', plan + '.upmap')
     unit_path = os.path.join(documents_path, 'upRail/units', unit + '.uptrain')
     env_path = os.path.join(documents_path, 'upRail', 'Environment.uprail')
@@ -332,6 +374,8 @@ def run_simulation(plan, unit):
             low_efficiency_timer = float(content[3][22:])
     except FileNotFoundError:
         print("SIM_ERROR file not found")
+
+    print_maps()
 
     #  No speed restrictions means full acceleration is optimal solution
     for i in range(0, 999):
